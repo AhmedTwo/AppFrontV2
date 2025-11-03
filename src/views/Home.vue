@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import ImagesLogo from '../assets/images/imagePortal.png'
 import axios from 'axios'
 
 // ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
@@ -21,7 +20,6 @@ const readOffer = async () => {
 
 
 onMounted(readOffer)
-
 </script>
 
 <template>
@@ -77,8 +75,8 @@ h1 {
 
 .p {
   text-align: center;
-  color: blue;
-  margin-bottom: 30px;
+  color: #666;
+  margin-bottom: 4%;
   font-size: 1rem;
   font-weight: 500;
 }

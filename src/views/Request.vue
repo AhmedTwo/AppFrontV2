@@ -3,116 +3,130 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
 </script>
 
 <template>
-  <div class="main-content">
-    <h1>TOUTES LES DEMANDES</h1>
+  <div>
+    <div class="header-section">
+      <h1>TOUTES LES DEMANDES</h1>
+      <p class="subtitle">Gérez et modifiez l'ensemble des demandes soumises.</p>
+    </div>
 
-    <div class="cards-container">
-      <!-- Exemple de demande utilisateur -->
-      <div class="card">
+    <div class="requests-grid">
+      <div class="request-card">
         <div class="card-header">
-          <div class="user-photo">
+          <div class="user-avatar">
             <img :src="ImagesLogo" alt="Photo Utilisateur" />
           </div>
-          <h2 class="user-name">Julien Dupont</h2>
+          <div class="user-info">
+            <h3 class="user-name">Julien Dupont</h3>
+            <span class="badge badge-type">Stage</span>
+          </div>
         </div>
 
-        <div class="card-content">
-          <p><strong>Titre :</strong> Demande de stage</p>
-          <p><strong>Description :</strong> Recherche un stage en développement web pour 6 mois.</p>
-          <p><strong>Type :</strong> Stage</p>
-          <p><strong>Statut :</strong> En attente</p>
-          <p><strong>Date de création :</strong> 15/10/2025</p>
+        <div class="card-body">
+          <h4 class="request-title">Demande de stage</h4>
+          <p class="request-description">
+            Recherche un stage en développement web pour 6 mois.
+          </p>
+
+          <div class="request-meta">
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <span>15/10/2025</span>
+            </div>
+            <span class="badge badge-pending">En attente</span>
+          </div>
         </div>
 
-        <div class="card-actions">
+        <div class="card-footer card-actions">
           <button type="button" class="btn-delete" title="Supprimer cette demande">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               fill="currentColor"
               viewBox="0 0 16 16"
-              class="bi bi-trash-fill"
             >
               <path
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
               />
             </svg>
           </button>
-
-          <div class="card-actions">
-            <button type="button" class="btn-toggle" title="Changer le statut">
-              <!-- Icône de validation -->
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-check-lg"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"
-                />
-              </svg>
-            </button>
-          </div>
+          
+          <button type="button" class="btn-toggle" title="Valider/Changer le statut">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
 
-      <!-- Exemple de demande entreprise -->
-      <div class="card">
+      <div class="request-card">
         <div class="card-header">
-          <div class="user-photo">
+          <div class="user-avatar">
             <img :src="ImagesLogo" alt="Logo Entreprise" />
           </div>
-          <h2 class="user-name">TechNova</h2>
+          <div class="user-info">
+            <h3 class="user-name">TechNova</h3>
+            <span class="badge badge-type">CDI</span>
+          </div>
         </div>
 
-        <div class="card-content">
-          <p><strong>Titre :</strong> Recrutement développeur</p>
-          <p>
-            <strong>Description :</strong> Recherche un développeur fullstack pour renforcer
-            l'équipe.
+        <div class="card-body">
+          <h4 class="request-title">Recrutement développeur</h4>
+          <p class="request-description">
+            Recherche un développeur fullstack pour renforcer l'équipe.
           </p>
-          <p><strong>Type :</strong> CDI</p>
-          <p><strong>Statut :</strong> En cours</p>
-          <p><strong>Date de création :</strong> 20/10/2025</p>
+
+          <div class="request-meta">
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <span>20/10/2025</span>
+            </div>
+            <span class="badge badge-active">En cours</span>
+          </div>
         </div>
 
-        <div class="card-actions">
+        <div class="card-footer card-actions">
           <button type="button" class="btn-delete" title="Supprimer cette demande">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               fill="currentColor"
               viewBox="0 0 16 16"
-              class="bi bi-trash-fill"
             >
               <path
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
               />
             </svg>
           </button>
-
-          <div class="card-actions">
-            <button type="button" class="btn-toggle" title="Changer le statut">
-              <!-- Icône de validation -->
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                class="bi bi-check-lg"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"
-                />
-              </svg>
-            </button>
-          </div>
+          
+          <button type="button" class="btn-toggle" title="Valider/Changer le statut">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -120,181 +134,235 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
 </template>
 
 <style scoped>
-.main-content {
-  padding: 2rem 1rem;
-  min-height: calc(100vh - 80px);
+/* En-tête */
+.header-section {
+  text-align: center;
+  margin-top: 3%;
 }
 
 h1 {
-  text-align: center;
-  color: #111;
-  font-size: 2rem;
-  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: black;
+  letter-spacing: -0.5px;
 }
 
-/* ==============================
-   Container des cards
-============================== */
-.cards-container {
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 3%;
+}
+
+/* Grille de demandes */
+.requests-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
+  max-width: 1300px; /* Ajustez la largeur si nécessaire */
+  margin: 0 auto;
+  padding: 0 15px; /* Pour gérer l'espacement sur les côtés */
 }
 
-/* ==============================
-   Card
-============================== */
-.card {
-  background-color: var(--colorgray);
-  border-radius: 40px;
-  box-shadow: 0 4px 10px rgb(102, 216, 245);
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+/* Carte de demande */
+.request-card {
+  background: white;
+  border-radius: 8%; /* Ou ajustez à une valeur en px/rem si 8% semble trop grand */
+  overflow: hidden;
+  transition: all 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.253);
+  display: flex; /* Ajouté pour s'assurer que le pied de page est en bas */
+  flex-direction: column; /* Ajouté pour s'assurer que le pied de page est en bas */
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 10px rgb(10, 10, 245);
+.request-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.445);
+  border-color: #0066ff;
 }
 
-/* ==============================
-   Card Header: Photo + Nom
-============================== */
+/* En-tête de carte */
 .card-header {
+  padding: 20px;
+  background: linear-gradient(135deg,#ffffff 50%, #d3d7ec 0%);
+  border-bottom: 2px solid black;
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 1rem;
+  gap: 15px; /* Ajouté pour l'espacement entre avatar et info */
 }
 
-.user-photo img,
-.no-photo {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+.user-avatar {
+  width: 70px; /* Ajusté par rapport à l'exemple 1 */
+  height: 70px; /* Ajusté par rapport à l'exemple 1 */
+  border-radius: 50%; /* Rondi pour l'avatar (était 30% dans l'exemple 1) */
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.685);
+  overflow: hidden; /* Important pour le cercle */
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.user-photo img {
-  border: 2px solid var(--primary);
-  background-color: #e9ecef;
-}
-
-.no-photo {
-  background-color: #dee2e6;
+.user-info {
+  flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6c757d;
-  font-weight: 600;
-  font-size: 1.1rem;
+  flex-direction: column;
 }
 
 .user-name {
   font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--primary-dark);
+  font-weight: 600;
+  color: black;
   margin: 0;
 }
 
-/* ==============================
-   Card Content
-============================== */
-.card-content p {
-  margin: 6px 0;
-  font-size: 0.95rem;
-  color: #333;
+/* Corps de carte */
+.card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1; /* Permet au corps de prendre de la place */
 }
 
-.card-content strong {
-  color: #000;
+.request-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: black;
+  margin: 0;
 }
 
-/* ==============================
-   Card Actions
-============================== */
-.card-actions {
-  margin-top: auto;
+.request-description {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.request-meta {
+  display: flex;
+  justify-content: space-between;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: #0066ff;
+}
+
+/* Badges */
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.badge-type {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Pied de carte et Actions Admin */
+.card-footer {
+  margin-top: auto; /* S'assure qu'il reste en bas */
+  padding: 16px 20px;
+  border-top: 2px solid #f0f0f0;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 10px; /* Espace entre les boutons d'action */
 }
 
-/* ==============================
-   Boutons Supprimer & Toggle
-============================== */
+/* Base des boutons d'action (Supprimer et Toggle) */
 .btn-delete,
 .btn-toggle {
   border: none;
   cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 20%;
+  padding: 8px; /* Taille plus compacte pour le pied de page */
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Supprimer */
+.btn-delete svg,
+.btn-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Styles spécifiques : Supprimer (Rouge) */
 .btn-delete {
-  color: red;
+  color: #dc3545;
+  border: 1px solid #dc3545;
 }
+
 .btn-delete:hover {
-  color: red;
-  transform: scale(1.5);
+  background: #dc3545;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
-/* Toggle statut */
+/* Styles spécifiques : Toggle/Valider (Vert/Bleu) */
 .btn-toggle {
-  color: green;
+  color: #28a745; /* Vert pour la validation */
+  border: 1px solid #28a745;
 }
+
 .btn-toggle:hover {
-  color: green;
-  transform: scale(1.5);
+  background: #28a745;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
-/* ==============================
-   Responsive
-============================== */
 
-/* Tablettes */
+/* Responsive */
+@media (max-width: 1350px) {
+  .requests-grid {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 1024px) {
-  .cards-container {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
+  .requests-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    margin-top: 20px;
   }
   h1 {
     font-size: 1.8rem;
   }
-}
-
-/* Mobiles */
-@media (max-width: 768px) {
-  .cards-container {
+  .requests-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .card {
-    padding: 1rem;
-  }
-  .card-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .card-actions {
-    justify-content: center;
-  }
-  .btn-add-request {
-    width: 100%;
-    justify-content: center;
-  }
-  h1 {
-    font-size: 1.5rem;
+    padding: 0 20px;
   }
 }
 </style>

@@ -7,6 +7,7 @@ import axios from 'axios'
 const nbUser = ref([]);
 const nbOffer = ref([]);
 const nbCompany = ref([]);
+const offers = ref([]);
 
 // console.log('Je suis dans la console')
 
@@ -24,6 +25,19 @@ const count = async () => {
 }
 
 onMounted(count)
+
+const readOffer = async () => {
+  // temps de chargement front plus rapide, avec la donnée qui arrive
+  try {
+    const responses = await axios.get('http://127.0.0.1:8000/api/allOffer')
+    offers.value = responses.data.data
+    // console.log(offers.value)
+  } catch (err) {
+    console.log(err)
+  }
+  }
+
+onMounted(readOffer)
 </script>
 
 <template>
@@ -56,13 +70,46 @@ onMounted(count)
 
   <div class="offers-section">
     <h1>Pourquoi choisir Portal Job ?</h1>
-    <p class="p-pres">Portal Job est bien plus qu’un simple site d’offres d’emploi...</p>
+    <p class="p-pres">Portal Job est bien plus qu’un simple site d’offres d’emploi...,</p>
     <ul class="pres-ul">
       <li>✅ Accédez à des offres exclusives publiées chaque jour</li>
       <li>🚀 Profitez d’un espace personnel intuitif pour gérer vos candidatures</li>
       <li>💼 Collaborez avec des entreprises innovantes</li>
       <li>🌍 Découvrez les possibilités de télétravail</li>
     </ul>
+  </div>
+
+  <div class="offers-section">
+    <h1>Tiens un avant gout de nos offres en ligne !!</h1>
+
+    <div class="offer-row" v-for="offer in offers.slice(0, 3)" :key="offer.id">
+      <!-- Carte de l'offre -->
+      <div class="offer-card">
+        <h3>IMAGE OFFRE</h3>
+        <img :src="offer.image_url" alt="Image offre" />
+        <!-- en Vue il ne faut pas mettre de double moustaches {{ }} dans un binding dynamique (:) -->
+
+        <div class="more-section">
+          <a href="/Offers" class="more-btn" title="Voir plus d'offre">
+            Voir plus !
+          </a>
+        </div>
+      </div>
+
+      <!-- Détails de l'offre -->
+      <div class="offer-details">
+        <h3>Détails de l'offre</h3>
+        <div class="detail-item"><strong>Titre :</strong> {{ offer.title }}</div>
+        <div class="detail-item"><strong>Description :</strong> {{ offer.description }}</div>
+        <div class="detail-item"><strong>Mission :</strong> {{ offer.mission }}</div>
+        <div class="detail-item"><strong>Lieu :</strong> {{ offer.location }}</div>
+        <div class="detail-item"><strong>Poste :</strong> {{ offer.category }}</div>
+        <div class="detail-item"><strong>Postulants :</strong> {{ offer.participants_count }}</div>
+        <div class="detail-item"><strong>Avantages :</strong> {{ offer.benefits }}</div>
+        <div class="detail-item"><strong>Crée le:</strong> {{ offer.created_at }}</div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -212,5 +259,94 @@ onMounted(count)
 .pres-ul li:nth-child(4) {
   border-left-color: rgb(20, 44, 252);
   border-right-color: rgb(20, 44, 252);
+}
+
+/* Container des offres */
+.offer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin: 0 15px 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 10px 8px 18px rgba(0, 0, 0, 0.575); /* comme si il flotte */
+  transition: transform 0.5s;
+  overflow-y: auto; /* scroll si contenu trop long */
+  max-height: 400px; /* limite la longueur des blocs */
+  width: 65%;
+}
+
+.offer-row:hover {
+  transform: translateY(-3px);
+}
+
+/* Carte de l'offre */
+.offer-card {
+  flex: 1 1 200px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  height: 100%;
+}
+
+.offer-card img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  object-fit: cover;
+  height: 120px;
+}
+
+/* Détails de l'offre */
+.offer-details {
+  display: flex;
+  flex-direction: column; /* empile verticalement les informations */
+  flex: 2 1 300px; /* prend plus d'espace que l'image */
+  padding: 15px;
+  gap: 6px; /* espace entre chaque detail-item */
+}
+
+.offer-details h3 {
+  margin-top: 0;
+  color: black;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Chaque ligne de détail */
+.detail-item {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #2c3e50;
+}
+
+.detail-item strong {
+  color: black;
+}
+
+.more-section {
+  margin-top: auto;
+}
+
+.more-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: #fff;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    background-color 0.25s,
+    transform 0.2s;
+}
+
+.more-btn:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
 }
 </style>

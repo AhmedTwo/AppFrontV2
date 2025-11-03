@@ -1,5 +1,24 @@
 <script setup>
-import ImagesLogo from '../assets/images/imagePortal.png'
+import { onMounted, ref } from 'vue';
+import axios from 'axios'
+
+// ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
+const offers = ref([]);
+
+// console.log('Je suis dans la console')
+
+const readOffer = async () => {
+  // temps de chargement front plus rapide, avec la donnée qui arrive
+  try {
+    const responses = await axios.get('http://127.0.0.1:8000/api/allOffer')
+    offers.value = responses.data.data
+    // console.log(offers.value)
+  } catch (err) {
+    console.log(err)
+  }
+  }
+
+onMounted(readOffer)
 </script>
 
 <template>
@@ -7,151 +26,32 @@ import ImagesLogo from '../assets/images/imagePortal.png'
     <h1>TOUTES LES OFFRES !</h1>
     <p class="p">Découvre toutes nos opportunités publiées</p>
 
-    <!-- Exemple d’offres statiques -->
 
-    <!-- Offre 1 -->
-    <div class="offer-row">
-      <!-- Carte gauche -->
+   <div class="offer-row" v-for="offer in offers" :key="offer.id">
+      <!-- Carte de l'offre -->
       <div class="offer-card">
-        <a href="offers/OffersCompany" style="text-decoration: none; text-align: center">
-          <h3>LOGO SOCIÉTÉ</h3>
-          <img :src="ImagesLogo" alt="Offres n°" />
-        </a>
-        <a href="/accueil/apply" class="apply-btn"> Postuler à l'offre </a>
-      </div>
+        <h3>IMAGE OFFRE</h3>
+        <img :src="offer.image_url" alt="Image offre" />
+        <!-- en Vue il ne faut pas mettre de double moustaches {{ }} dans un binding dynamique (:) -->
 
-      <!-- Bouton favoris -->
-      <div>
-        <a href="favoris/add/1" class="btn-heart">
-          <span style="font-size: 35px">♡</span>
-        </a>
-      </div>
-
-      <!-- Détails droite -->
-      <div class="offer-details">
-        <h3>Détails de l'offre</h3>
-        <div class="detail-item">
-          <strong>Description :</strong> Développement d'une application web
+        <div class="apply-section">
+          <a href="/Home/apply" class="apply-btn" title="Voir les détails">
+            Postuler à l'offre
+          </a>
         </div>
-        <div class="detail-item">
-          <strong>Mission :</strong> Développer des fonctionnalités front-end
-        </div>
-        <div class="detail-item"><strong>Société :</strong> Entreprise Alpha</div>
-        <div class="detail-item"><strong>Lieu :</strong> Paris</div>
-        <div class="detail-item"><strong>Poste :</strong> Développeur Web</div>
-        <div class="detail-item"><strong>Postulants :</strong> 12</div>
-        <div class="detail-item"><strong>Avantages :</strong> Télétravail, tickets restaurant</div>
-        <div class="detail-item"><strong>Publié le :</strong> 23/10/2025</div>
       </div>
-    </div>
 
-    <!-- Offre 2 -->
-    <div class="offer-row">
-      <div class="offer-card">
-        <a href="offers/OffersCompany" style="text-decoration: none; text-align: center">
-          <h3>LOGO SOCIÉTÉ</h3>
-          <img :src="ImagesLogo" alt="Offres n°" />
-        </a>
-        <a href="/accueil/apply" class="apply-btn"> Postuler à l'offre </a>
-      </div>
-      <div>
-        <a href="favoris/add/2" class="btn-heart">
-          <span style="font-size: 35px">♡</span>
-        </a>
-      </div>
+      <!-- Détails de l'offre -->
       <div class="offer-details">
         <h3>Détails de l'offre</h3>
-        <div class="detail-item"><strong>Description :</strong> Gestion de projets IT</div>
-        <div class="detail-item"><strong>Mission :</strong> Planifier et suivre les projets</div>
-        <div class="detail-item"><strong>Société :</strong> Entreprise Beta</div>
-        <div class="detail-item"><strong>Lieu :</strong> Lyon</div>
-        <div class="detail-item"><strong>Poste :</strong> Chef de projet</div>
-        <div class="detail-item"><strong>Postulants :</strong> 5</div>
-        <div class="detail-item"><strong>Avantages :</strong> Mutuelle, prime annuelle</div>
-        <div class="detail-item"><strong>Publié le :</strong> 21/10/2025</div>
-      </div>
-    </div>
-
-    <!-- Offre 3 -->
-    <div class="offer-row">
-      <div class="offer-card">
-        <a href="offers/OffersCompany" style="text-decoration: none; text-align: center">
-          <h3>LOGO SOCIÉTÉ</h3>
-          <img :src="ImagesLogo" alt="Offres n°" />
-        </a>
-        <a href="/accueil/apply" class="apply-btn"> Postuler à l'offre </a>
-      </div>
-      <div>
-        <a href="favoris/add/3" class="btn-heart">
-          <span style="font-size: 35px">♡</span>
-        </a>
-      </div>
-      <div class="offer-details">
-        <h3>Détails de l'offre</h3>
-        <div class="detail-item"><strong>Description :</strong> Analyse de données</div>
-        <div class="detail-item"><strong>Mission :</strong> Créer des tableaux de bord</div>
-        <div class="detail-item"><strong>Société :</strong> Entreprise Gamma</div>
-        <div class="detail-item"><strong>Lieu :</strong> Marseille</div>
-        <div class="detail-item"><strong>Poste :</strong> Data Analyst</div>
-        <div class="detail-item"><strong>Postulants :</strong> 8</div>
-        <div class="detail-item">
-          <strong>Avantages :</strong> Télétravail partiel, tickets resto
-        </div>
-        <div class="detail-item"><strong>Publié le :</strong> 20/10/2025</div>
-      </div>
-    </div>
-
-    <!-- Offre 4 -->
-    <div class="offer-row">
-      <div class="offer-card">
-        <a href="offers/OffersCompany" style="text-decoration: none; text-align: center">
-          <h3>LOGO SOCIÉTÉ</h3>
-          <img :src="ImagesLogo" alt="Offres n°" />
-        </a>
-        <a href="/accueil/apply" class="apply-btn"> Postuler à l'offre </a>
-      </div>
-      <div>
-        <a href="favoris/add/4" class="btn-heart">
-          <span style="font-size: 35px">♡</span>
-        </a>
-      </div>
-      <div class="offer-details">
-        <h3>Détails de l'offre</h3>
-        <div class="detail-item"><strong>Description :</strong> Marketing digital</div>
-        <div class="detail-item"><strong>Mission :</strong> Gérer campagnes publicitaires</div>
-        <div class="detail-item"><strong>Société :</strong> Entreprise Delta</div>
-        <div class="detail-item"><strong>Lieu :</strong> Lille</div>
-        <div class="detail-item"><strong>Poste :</strong> Responsable Marketing</div>
-        <div class="detail-item"><strong>Postulants :</strong> 6</div>
-        <div class="detail-item"><strong>Avantages :</strong> Tickets resto, mutuelle</div>
-        <div class="detail-item"><strong>Publié le :</strong> 18/10/2025</div>
-      </div>
-    </div>
-
-    <!-- Offre 5 -->
-    <div class="offer-row">
-      <div class="offer-card">
-        <a href="offers/OffersCompany" style="text-decoration: none; text-align: center">
-          <h3>LOGO SOCIÉTÉ</h3>
-          <img :src="ImagesLogo" alt="Offres n°" />
-        </a>
-        <a href="/accueil/apply" class="apply-btn"> Postuler à l'offre </a>
-      </div>
-      <div>
-        <a href="favoris/add/5" class="btn-heart">
-          <span style="font-size: 35px">♡</span>
-        </a>
-      </div>
-      <div class="offer-details">
-        <h3>Détails de l'offre</h3>
-        <div class="detail-item"><strong>Description :</strong> Support client</div>
-        <div class="detail-item"><strong>Mission :</strong> Assister les utilisateurs</div>
-        <div class="detail-item"><strong>Société :</strong> Entreprise Epsilon</div>
-        <div class="detail-item"><strong>Lieu :</strong> Toulouse</div>
-        <div class="detail-item"><strong>Poste :</strong> Support Client</div>
-        <div class="detail-item"><strong>Postulants :</strong> 10</div>
-        <div class="detail-item"><strong>Avantages :</strong> Prime, mutuelle</div>
-        <div class="detail-item"><strong>Publié le :</strong> 15/10/2025</div>
+        <div class="detail-item"><strong>Titre :</strong> {{ offer.title }}</div>
+        <div class="detail-item"><strong>Description :</strong> {{ offer.description }}</div>
+        <div class="detail-item"><strong>Mission :</strong> {{ offer.mission }}</div>
+        <div class="detail-item"><strong>Lieu :</strong> {{ offer.location }}</div>
+        <div class="detail-item"><strong>Poste :</strong> {{ offer.category }}</div>
+        <div class="detail-item"><strong>Postulants :</strong> {{ offer.participants_count }}</div>
+        <div class="detail-item"><strong>Avantages :</strong> {{ offer.benefits }}</div>
+        <div class="detail-item"><strong>Crée le:</strong> {{ offer.created_at }}</div>
       </div>
     </div>
   </main>
@@ -175,8 +75,7 @@ h1 {
 }
 
 .p {
-  text-align: center;
-  color: #007bff;
+  color: #666;
   font-size: 1rem;
   font-weight: 500;
   margin-bottom: 40px;

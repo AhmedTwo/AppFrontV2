@@ -3,17 +3,18 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
 </script>
 
 <template>
-  <div class="main-content">
-    <h1>MES DEMANDES</h1>
+    <div class="header-section">
+      <h1>MES DEMANDES</h1>
+      <p class="subtitle">Gérez toutes vos demandes en un seul endroit</p>
+    </div>
 
-    <div class="admin-add-request">
-      <a href="/myRequest/addMyRequest" class="btn-outline-primary">
+    <div class="action-bar">
+      <a href="/myRequest/addMyRequest" class="btn-add">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
+          width="18"
+          height="18"
           fill="currentColor"
-          class="bi bi-plus-square"
           viewBox="0 0 16 16"
         >
           <path
@@ -23,294 +24,340 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
             d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
           />
         </svg>
-        AJOUTER UNE DEMANDE
+        Ajouter une demande
       </a>
     </div>
 
-    <div class="cards-container">
-      <!-- Exemple de demande utilisateur -->
-      <div class="card">
+    <div class="requests-grid">
+      <!-- Exemple demande utilisateur -->
+      <div class="request-card">
         <div class="card-header">
-          <div class="user-photo">
+          <div class="user-avatar">
             <img :src="ImagesLogo" alt="Photo Utilisateur" />
           </div>
-          <h2 class="user-name">Julien Dupont</h2>
+          <div class="user-info">
+            <h3 class="user-name">Julien Dupont</h3>
+            <span class="badge badge-type">Stage</span>
+          </div>
         </div>
 
-        <div class="card-content">
-          <p><strong>Titre :</strong> Demande de stage</p>
-          <p><strong>Description :</strong> Recherche un stage en développement web pour 6 mois.</p>
-          <p><strong>Type :</strong> Stage</p>
-          <p><strong>Statut :</strong> En attente</p>
-          <p><strong>Date de création :</strong> 15/10/2025</p>
+        <div class="card-body">
+          <h4 class="request-title">Demande de stage</h4>
+          <p class="request-description">
+            Recherche un stage en développement web pour 6 mois.
+          </p>
+          
+          <div class="request-meta">
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <span>15/10/2025</span>
+            </div>
+            <span class="badge badge-pending">En attente</span>
+          </div>
         </div>
 
-        <div class="card-actions">
+        <div class="card-footer">
           <button type="button" class="btn-delete" title="Supprimer cette demande">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               fill="currentColor"
               viewBox="0 0 16 16"
-              class="bi bi-trash-fill"
             >
               <path
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
               />
             </svg>
+            Supprimer
           </button>
         </div>
       </div>
 
-      <!-- Exemple de demande entreprise -->
-      <div class="card">
+      <!-- Exemple demande entreprise -->
+      <div class="request-card">
         <div class="card-header">
-          <div class="user-photo">
+          <div class="user-avatar">
             <img :src="ImagesLogo" alt="Logo Entreprise" />
           </div>
-          <h2 class="user-name">TechNova</h2>
+          <div class="user-info">
+            <h3 class="user-name">TechNova</h3>
+            <span class="badge badge-type">CDI</span>
+          </div>
         </div>
 
-        <div class="card-content">
-          <p><strong>Titre :</strong> Recrutement développeur</p>
-          <p>
-            <strong>Description :</strong> Recherche un développeur fullstack pour renforcer
-            l'équipe.
+        <div class="card-body">
+          <h4 class="request-title">Recrutement développeur</h4>
+          <p class="request-description">
+            Recherche un développeur fullstack pour renforcer l'équipe.
           </p>
-          <p><strong>Type :</strong> CDI</p>
-          <p><strong>Statut :</strong> En cours</p>
-          <p><strong>Date de création :</strong> 20/10/2025</p>
+          
+          <div class="request-meta">
+            <div class="meta-item">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+              <span>20/10/2025</span>
+            </div>
+            <span class="badge badge-active">En cours</span>
+          </div>
         </div>
 
-        <div class="card-actions">
+        <div class="card-footer">
           <button type="button" class="btn-delete" title="Supprimer cette demande">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               fill="currentColor"
               viewBox="0 0 16 16"
-              class="bi bi-trash-fill"
             >
               <path
                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
               />
             </svg>
+            Supprimer
           </button>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <style scoped>
-.main-content {
-  padding: 2rem 1rem;
-  min-height: calc(100vh - 80px);
+/* En-tête */
+.header-section {
+  text-align: center;
+  margin-top: 3%;
 }
 
 h1 {
-  text-align: center;
-  color: #111;
-  font-size: 2rem;
-  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: black;
+  letter-spacing: -0.5px;
 }
 
-/* ==============================
-   Container des cards
-============================== */
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
 }
 
-/* ==============================
-   Card
-============================== */
-.card {
-  background-color: var(--colorgray);
-  border-radius: 40px;
-  box-shadow: 0 4px 10px rgb(102, 216, 245);
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+/* Barre d'action */
+.action-bar {
+  max-width: 67%;
+  margin: 0 auto 30px;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 10px rgb(10, 10, 245);
-}
-
-/* ==============================
-   Card Header: Photo + Nom
-============================== */
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 1rem;
-}
-
-.user-photo img,
-.no-photo {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.user-photo img {
-  border: 2px solid var(--primary);
-  background-color: #e9ecef;
-}
-
-.no-photo {
-  background-color: #dee2e6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6c757d;
+.btn-add {
+  display: inline-flex;
+  gap: 8px;
+  padding: 12px 20px;
+  background: white;
+  color: #0066ff;
+  border: 2px solid #0066ff;
+  border-radius: 10px;
+  text-decoration: none;
   font-weight: 600;
-  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.521);
+}
+
+.btn-add:hover {
+  background: #0066ff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+.btn-add svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-add:hover svg {
+  transform: rotate(90deg);
+}
+
+/* Grille de demandes */
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  /* creation auto, d'autant de colonne possible dans l'espace dispo, chacune fait min 260px et max une part egal de l'espace restant */
+  gap: 24px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Carte de demande */
+.request-card {
+  background: white;
+  border-radius: 8%;
+  overflow: hidden;
+  transition: all 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.253);
+}
+
+.request-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.445);
+  border-color: #0066ff;
+}
+
+/* En-tête de carte */
+.card-header {
+  padding: 20px;
+  background: linear-gradient(135deg,#ffffff 50%, #d3d7ec 0%);
+  border-bottom: 2px solid black;
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 90px;
+  height: 80px;
+  border-radius: 30%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.685);
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* optionnel */
+}
+
+.user-info {
+  flex: 1;
+  flex-direction: column;
 }
 
 .user-name {
   font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--primary-dark);
+  font-weight: 600;
+  color: black;
   margin: 0;
 }
 
-/* ==============================
-   Card Content
-============================== */
-.card-content p {
-  margin: 6px 0;
-  font-size: 0.95rem;
-  color: #333;
+/* Corps de carte */
+.card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.card-content strong {
-  color: #000;
+.request-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: black;
+  margin: 0;
 }
 
-/* ==============================
-   Card Actions
-============================== */
-.card-actions {
-  margin-top: auto;
+.request-description {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.request-meta {
+  display: flex;
+  justify-content: space-between;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: #0066ff;
+}
+
+/* Badges */
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.badge-type {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Pied de carte */
+.card-footer {
+  padding: 16px 20px;
+  border-top: 2px solid #f0f0f0;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
 }
 
-/* ==============================
-   Boutons Supprimer & Toggle
-============================== */
 .btn-delete {
-  border: none;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 20%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.25s ease;
-}
-
-/* Supprimer */
-.btn-delete {
-  color: red;
-}
-.btn-delete:hover {
-  color: red;
-  transform: scale(1.5);
-}
-
-/* ==============================
-   Admin Add Request Button
-============================== */
-.admin-add-request {
-  margin-bottom: 2rem;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.admin-add-request svg {
-  transition: transform 0.3s;
-}
-
-.admin-add-request:hover svg {
-  transform: rotate(90deg);
-}
-
-.admin-add-request .btn-outline-primary {
-  background-color: transparent;
-  color: var(--primary);
-  border: 2px solid var(--primary);
-  padding: 10px 18px;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.admin-add-request .btn-outline-primary:hover {
-  background-color: var(--primary);
+.btn-delete:hover {
+  background: #dc3545;
   color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
-/* ==============================
-   Responsive
-============================== */
-
-/* Tablettes */
+/* Responsive */
 @media (max-width: 1024px) {
-  .cards-container {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
+  .requests-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 30px 15px;
+  }
+
   h1 {
     font-size: 1.8rem;
   }
-}
 
-/* Mobiles */
-@media (max-width: 768px) {
-  .cards-container {
+  .requests-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
   }
-  .card {
-    padding: 1rem;
-  }
-  .card-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .card-actions {
+
+  .action-bar {
     justify-content: center;
   }
-  .btn-add-request {
+
+  .btn-add {
     width: 100%;
     justify-content: center;
-  }
-  h1 {
-    font-size: 1.5rem;
   }
 }
 </style>

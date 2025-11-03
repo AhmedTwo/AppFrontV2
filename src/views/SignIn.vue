@@ -41,8 +41,8 @@ import ImagesLogo from '../assets/images/imagePortal.png'
           <br />
         </div>
 
-        <button type="submit" id="sign_in"><a href="/home">Connexion !</a></button>
       </form>
+      <button type="submit" id="sign_in"><a class="sign_inA" href="/home">Se connecter !</a></button>
     </div>
   </div>
 </template>
@@ -126,7 +126,7 @@ import ImagesLogo from '../assets/images/imagePortal.png'
 a {
   color: #007bff;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 a:hover {
@@ -140,19 +140,18 @@ a:hover {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: var(--primary);
   border: 2px solid var(--primary);
   border-radius: 10px;
+  width: 100%;
 }
 
 #sign_in:hover {
-  background-color: var(--primary);
-  color: white;
+  background-color: rgba(106, 139, 247, 0.63);
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
-#button:hover {
-  background-color: #0056b3;
+.sign_inA:hover {
+  color: white;
 }
 
 /* responsive fait par chat gpt car je ne connais et comprends pas */
