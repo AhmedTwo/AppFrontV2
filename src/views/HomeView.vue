@@ -72,17 +72,17 @@ onMounted(readOffer)
     <h1>Pourquoi choisir Portal Job ?</h1>
     <p class="p-pres">Portal Job est bien plus qu’un simple site d’offres d’emploi...,</p>
     <ul class="pres-ul">
-      <li>✅ Accédez à des offres exclusives publiées chaque jour</li>
-      <li>🚀 Profitez d’un espace personnel intuitif pour gérer vos candidatures</li>
-      <li>💼 Collaborez avec des entreprises innovantes</li>
-      <li>🌍 Découvrez les possibilités de télétravail</li>
+      <li>✅ Accédez à des offres exclusives publiées chaque jour ✅</li>
+      <li>🚀 Profitez d’un espace personnel intuitif pour gérer vos candidatures 🚀</li>
+      <li>💼 Collaborez avec des entreprises innovantes 💼</li>
+      <li>🌍 Découvrez les possibilités de télétravail 🌍</li>
     </ul>
   </div>
 
   <div class="offers-section">
     <h1>Tiens un avant gout de nos offres en ligne !!</h1>
 
-    <div class="offer-row" v-for="offer in offers.slice(0, 3)" :key="offer.id">
+    <div class="offer-row" v-for="offer in offers.slice(0, 2)" :key="offer.id">
       <!-- Carte de l'offre -->
       <div class="offer-card">
         <h3>IMAGE OFFRE</h3>
@@ -90,7 +90,7 @@ onMounted(readOffer)
         <!-- en Vue il ne faut pas mettre de double moustaches {{ }} dans un binding dynamique (:) -->
 
         <div class="more-section">
-          <a href="/Offers" class="more-btn" title="Voir plus d'offre">
+          <a href="/SignIn" class="more-btn" title="Voir plus d'offre">
             Voir plus !
           </a>
         </div>
@@ -109,7 +109,6 @@ onMounted(readOffer)
         <div class="detail-item"><strong>Crée le:</strong> {{ offer.created_at }}</div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -230,12 +229,12 @@ onMounted(readOffer)
 
 .pres-ul li {
   padding: 1.2rem 1.8rem;
-  background: rgba(240, 158, 158, 0.199);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.712);
   font-size: 1rem;
   color: black;
   text-align: center;
+  font-weight: 500;
   list-style: none;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;

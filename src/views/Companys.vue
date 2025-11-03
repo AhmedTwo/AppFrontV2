@@ -1,89 +1,87 @@
 <script setup>
-
 import { onMounted, ref } from 'vue';
 import axios from 'axios'
 
-// ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
 const companys = ref([]);
 
-// console.log('Je suis dans la console')
-
 const readCompany = async () => {
-  // temps de chargement front plus rapide, avec la donnée qui arrive
   try {
     const responses = await axios.get('http://127.0.0.1:8000/api/allCompany')
     companys.value = responses.data.data
   } catch (err) {
     console.log(err)
   }
-  }
+}
 
 onMounted(readCompany)
 </script>
 
 <template>
-    <div class="header-section">
-      <h1>TOUTES LES SOCIETES</h1>
-      <p class="subtitle">Découvre toutes nos sociétés inscrites à Portal_Job</p>
-    </div>
+  <div class="header-section">
+    <h1>TOUTES LES SOCIÉTÉS</h1>
+    <p class="subtitle">Découvrez toutes nos sociétés inscrites à Portal_Job</p>
+  </div>
 
-    <div class="company-grid" id="companyContainer">
-      <div class="company-card" v-for="company in companys" :key="company.id">
-        <div class="card-header">
-          <div class="logo-container">
-            <a href="offers/offerCompany">
-              <img :src="company.logo" :alt="`Logo ${company.name}`" />
-            </a>
-          </div>
-        </div>
-        
-        <div class="card-body">
-          <h3 class="company-name">{{ company.name }}</h3>
-          
-          <div class="company-info">
-            <div class="info-item">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <path d="M3 9h18M9 21V9"/>
-              </svg>
-              <span>{{ company.industry }}</span>
-            </div>
-            
-            <div class="info-item">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-              <span>{{ company.address }}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="card-footer">
-          <a href="companys/companyDetails" class="btn-details">
-            Voir les détails
-            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
+  <div class="company-grid">
+    <div class="company-card" v-for="company in companys" :key="company.id">
+      <!-- En-tête avec logo -->
+      <div class="card-header">
+        <div class="logo-container">
+          <a href="offers/offerCompany">
+            <img :src="company.logo" :alt="`Logo ${company.name}`" />
           </a>
         </div>
       </div>
+      
+      <!-- Corps de carte -->
+      <div class="card-body">
+        <h3 class="company-name">{{ company.name }}</h3>
+        
+        <div class="company-info">
+          <div class="info-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18M9 21V9"/>
+            </svg>
+            <span>{{ company.industry }}</span>
+          </div>
+          
+          <div class="info-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>{{ company.address }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pied de carte -->
+      <div class="card-footer">
+        <a href="/companys/companyDetails" class="btn-details">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+          </svg>
+          Voir les détails
+        </a>
+      </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
-
 /* En-tête */
 .header-section {
   text-align: center;
-  margin-bottom: 35px;
+  margin-top: 3%;
+  margin-bottom: 30px;
 }
 
 h1 {
   font-size: 2.2rem;
   font-weight: 700;
   color: black;
-  margin-top: 3%;
   letter-spacing: -0.5px;
 }
 
@@ -96,76 +94,81 @@ h1 {
 /* Grille de cartes */
 .company-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  /* creation auto, d'autant de colonne possible dans l'espace dispo, chacune fait min 260px et max une part egal de l'espace restant */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   max-width: 1300px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 /* Carte société */
 .company-card {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8%;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.253);
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .company-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.16);
+  transform: translateY(-10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.445);
   border-color: #0066ff;
 }
 
 /* En-tête de carte avec logo */
 .card-header {
-  padding: 20px 16px 16px;
-  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-  border-bottom: 1px solid #f0f0f0;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #ffffff 50%, #d3d7ec 0%);
+  border-bottom: 2px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .logo-container {
-  height: 90px;
+  width: 140px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(21, 59, 224);
-  border-radius: 5px;
-  padding: 5%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.925);
+  background: white;
+  border-radius: 30%;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.685);
   transition: transform 0.3s ease;
+  border: 3px solid white;
 }
 
 .logo-container:hover {
-  transform: scale(1.05); /* aggrandissement du logo */
+  transform: scale(1.08) rotate(2deg);
 }
 
 .logo-container img {
   max-width: 100%;
   max-height: 100%;
+  object-fit: contain;
 }
 
 /* Corps de carte */
 .card-body {
-  padding: 18px 16px;
+  padding: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .company-name {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: black;
   margin: 0;
-  line-height: 1.3;
   text-align: center;
+  line-height: 1.3;
 }
 
 .company-info {
@@ -178,14 +181,15 @@ h1 {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  padding: 10px 12px;
   background: #f8f9fa;
   border-radius: 8px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .info-item:hover {
   background: #e9ecef;
+  transform: translateX(4px);
 }
 
 .icon {
@@ -203,84 +207,77 @@ h1 {
 
 /* Pied de carte */
 .card-footer {
-  padding: 20px;
-  border-top: 1px solid #f0f0f0;
+  padding: 16px 20px;
+  border-top: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: center;
 }
 
 .btn-details {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  width: 100%;
-  padding: 12px 20px;
-  background: #0066ff;
-  color: white;
+  padding: 12px 24px;
+  background: white;
+  color: #0066ff;
+  border: 2px solid #0066ff;
   border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
 }
 
 .btn-details:hover {
-  background: #0052cc;
+  background: #0066ff;
+  color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
 }
 
-.arrow-icon {
-  width: 18px;
-  height: 18px;
+.btn-details svg {
   transition: transform 0.3s ease;
 }
 
-.btn-details:hover .arrow-icon {
-  transform: translateX(4px);
+.btn-details:hover svg {
+  transform: scale(1.15);
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
   .company-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px;
   }
 }
 
 @media (max-width: 768px) {
-  main {
-    padding: 40px 15px;
-  }
-
-  h1 {
-    font-size: 2.2rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .company-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
-}
-
-@media (max-width: 480px) {
   h1 {
     font-size: 1.8rem;
   }
 
   .company-grid {
     grid-template-columns: 1fr;
-  }
-
-  .card-header {
-    padding: 25px 15px 15px;
+    padding: 0 15px;
   }
 
   .logo-container {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .card-header {
+    padding: 25px 15px;
+  }
+
+  .logo-container {
+    width: 100px;
     height: 100px;
   }
 }

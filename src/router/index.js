@@ -17,6 +17,10 @@ import Favoris from '../views/Favoris.vue'
 import Profil from '../views/Profil.vue'
 import Contact from '../views/Contact.vue'
 import OffersCompany from '../views/OffersCompany.vue'
+import UpdateMyRequest from '../views/UpdateMyRequest.vue'
+import AddMyRequest from '../views/AddMyRequest.vue'
+import UpdateOfferById from '../views/UpdateOffer.vue'
+import UpdateCompanyByID from '../views/UpdateCompany.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -110,6 +114,26 @@ const router = createRouter({
       path: '/Contact',
       name: 'Contact',
       component: Contact,
+    },
+    {
+      path: '/myRequest/UpdateMyRequest',
+      name: 'Modif Demande',
+      component: UpdateMyRequest,
+    },
+    {
+      path: '/offers/UpdateOffer',
+      name: 'Modif Offre',
+      component: UpdateOfferById,
+    },
+    {
+      path: '/Dashboard_Admin/UpdateCompany',
+      name: 'Modif Company',
+      component: UpdateCompanyByID,
+    },
+    {
+      path: '/myRequest/AddMyRequest',
+      name: 'Ajout Demande',
+      component: AddMyRequest,
     }
   ],
 })
