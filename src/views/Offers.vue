@@ -23,7 +23,7 @@ onMounted(readOffer)
 
 <template>
   <div class="header-section">
-    <h1>LES OFFRES RÉCENTES</h1>
+    <h1>NOS OFFRES</h1>
     <p class="subtitle">Découvrez les dernières opportunités publiées</p>
   </div>
 

@@ -1,6 +1,34 @@
 <script setup>
 import ImagesPortal from '../assets/images/Portal.png'
 import ImagesLogo from '../assets/images/imagePortal.png'
+
+import { ref } from 'vue'
+import api from '@/services/api'
+import { useRouter } from 'vue-router' // sert a rediriger une fois connecté
+
+const router = useRouter() // Instanciez le router
+const errorMessage = ref('')
+
+const login = ref({
+  email: '',
+  password: '',
+})
+
+const loginUser = async () => {
+  try {
+    const responses = await api.post('/login', login.value)
+    localStorage.setItem('auth_token', responses.data.token)
+    console.log(responses.data)
+    router.push('/Home') // redirection
+  } catch (err) {
+    console.log(err)
+    if (err.response && err.response.status === 401) {
+      errorMessage.value = 'Votre mdp ou email est incorrect !'
+    } else {
+      errorMessage.value = 'Une erreur est survenue !'
+    }
+  }
+}
 </script>
 
 <template>
@@ -12,17 +40,12 @@ import ImagesLogo from '../assets/images/imagePortal.png'
         <img :src="ImagesPortal" alt="fond logo porte de portal job" width="35" />
       </h1>
       <!-- &nbsp; me permet de faire un espace en html -->
-      <div
-        class="alert-message error"
-        style="color: red; text-align: center; padding: 0.5rem; display: none"
-      >
-        Message d’erreur ici
-      </div>
 
-      <form id="loginForm" action="/connexion" method="POST">
+      <form id="loginForm" @submit.prevent="loginUser">
         <div class="divLogin">
           <label for="inputEmail">Email :</label>
           <input
+            v-model="login.email"
             type="email"
             name="inputEmail"
             id="inputEmail"
@@ -31,18 +54,26 @@ import ImagesLogo from '../assets/images/imagePortal.png'
         </div>
         <div class="divLogin">
           <label for="inputMdp">Mot de passe :</label>
-          <input type="password" name="inputMdp" id="inputMdp" placeholder="&nbsp;********" />
-          <p><a href="/SignIn/passwordForget">Mot de passe oublié ?</a></p>
+          <input
+            v-model="login.password"
+            type="password"
+            name="inputMdp"
+            id="inputMdp"
+            placeholder="&nbsp;********"
+          />
         </div>
+        <div v-if="errorMessage">
+          <span style="color: red">{{ errorMessage }}</span>
+        </div>
+        <p><a href="/SignIn/passwordForget">Mot de passe oublié ?</a></p>
 
         <div id="inscri_apply">
           <p>Vous n'avez pas de compte ? <a href="/SignUp/addUser/">Inscription !</a></p>
           <p>Vous êtes une Société ? <a href="/SignIn/applyCompany">Rejoignez-nous !</a></p>
           <br />
         </div>
-
+        <button type="submit" id="sign_in">Se connecter !</button>
       </form>
-      <button type="submit" id="sign_in"><a class="sign_inA" href="/home">Se connecter !</a></button>
     </div>
   </div>
 </template>
@@ -143,15 +174,12 @@ a:hover {
   border: 2px solid var(--primary);
   border-radius: 10px;
   width: 100%;
+  color: black;
 }
 
 #sign_in:hover {
   background-color: rgba(106, 139, 247, 0.63);
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-}
-
-.sign_inA:hover {
-  color: white;
 }
 
 /* responsive fait par chat gpt car je ne connais et comprends pas */

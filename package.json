@@ -12,10 +12,11 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "format": "prettier --write src/",
-    "start": "npm run dev -- --host" 
+    "start": "npm run dev -- --host"
   },
   "dependencies": {
     "axios": "^1.13.1",
+    "pinia": "^3.0.3",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"
   },
