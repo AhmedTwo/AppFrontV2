@@ -1,5 +1,4 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <div class="update-container">
@@ -11,12 +10,6 @@
 
     <!-- Formulaire -->
     <form class="update-form">
-      <!-- Informations utilisateur -->
-      <div class="form-group">
-        <label for="name">Nom complet</label>
-        <input type="text" id="name" value="Julien Dupont" />
-      </div>
-
       <div class="form-group">
         <label for="type">Type de demande</label>
         <select id="type">
@@ -43,7 +36,9 @@
       <!-- Boutons d'action -->
       <div class="action-buttons">
         <button type="submit" class="btn-save">
-            <a href="/MyRequest" style="text-decoration: none; color: white;">Enregistrer les modifications</a>
+          <a href="/MyRequest" style="text-decoration: none; color: white"
+            >Enregistrer les modifications</a
+          >
         </button>
         <a href="/MyRequest" class="btn-cancel">Annuler</a>
       </div>

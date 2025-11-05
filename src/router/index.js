@@ -21,6 +21,7 @@ import UpdateMyRequest from '../views/UpdateMyRequest.vue'
 import AddMyRequest from '../views/AddMyRequest.vue'
 import UpdateOfferById from '../views/UpdateOffer.vue'
 import UpdateCompanyByID from '../views/UpdateCompany.vue'
+import UpdateProfil from '../views/UpdateProfil.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -131,10 +132,15 @@ const router = createRouter({
       component: UpdateCompanyByID,
     },
     {
+      path: '/Profil/UpdateProfil',
+      name: 'Modif Profil',
+      component: UpdateProfil,
+    },
+    {
       path: '/myRequest/AddMyRequest',
       name: 'Ajout Demande',
       component: AddMyRequest,
-    }
+    },
   ],
 })
 

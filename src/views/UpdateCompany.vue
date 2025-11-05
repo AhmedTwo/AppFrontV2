@@ -1,12 +1,24 @@
+<script setup>
+import { ref } from 'vue'
+
+const company = ref({
+  name: '',
+  number_of_employees: '',
+  industry: '',
+  address: '',
+  latitude: '',
+  longitude: '',
+  description: '',
+  n_siret: '',
+  logo: '',
+})
+</script>
+
 <template>
   <main class="update-container">
     <div class="update-header">
-      <h1 class="update-title">
-        <i class="fa-solid fa-pen-to-square"></i> MODIFIER LA SOCIÉTÉ
-      </h1>
-      <p class="update-description">
-        Mettez à jour les informations de la société ci-dessous.
-      </p>
+      <h1 class="update-title"><i class="fa-solid fa-pen-to-square"></i> MODIFIER LA SOCIÉTÉ</h1>
+      <p class="update-description">Mettez à jour les informations de la société ci-dessous.</p>
     </div>
 
     <form class="update-form">
@@ -118,9 +130,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn-update">
-          Mettre à jour
-        </button>
+        <button type="submit" class="btn-update">Mettre à jour</button>
       </div>
     </form>
   </main>
@@ -142,9 +152,9 @@
 }
 
 .update-title {
-margin-top: -4%;
-font-size: 2.3rem;
-font-weight: 700;
+  margin-top: -4%;
+  font-size: 2.3rem;
+  font-weight: 700;
 }
 
 .update-title i {
@@ -188,7 +198,9 @@ font-weight: 700;
   border-radius: 10px;
   padding: 10px 15px;
   font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-input:focus,
@@ -237,20 +249,3 @@ font-weight: 700;
   }
 }
 </style>
-
-
-<script setup>
-import { ref } from "vue";
-
-const company = ref({
-  name: "",
-  number_of_employees: "",
-  industry: "",
-  address: "",
-  latitude: "",
-  longitude: "",
-  description: "",
-  n_siret: "",
-  logo: "",
-});
-</script>

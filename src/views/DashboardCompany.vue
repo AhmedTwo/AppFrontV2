@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
 
 // ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
-const offers = ref([]);
+const offers = ref([])
 
 // console.log('Je suis dans la console')
 
@@ -16,7 +16,7 @@ const readOffer = async () => {
   } catch (err) {
     console.log(err)
   }
-  }
+}
 
 onMounted(readOffer)
 </script>
@@ -29,10 +29,10 @@ onMounted(readOffer)
 
   <div class="offers-grid">
     <div class="offer-card" v-for="offer in offers.slice(0, 2)" :key="offer.id">
-      
       <div class="card-image">
         <img :src="offer.image_url" alt="Image offre" />
         <div class="image-overlay">
+          <span class="badge badge-employment">{{ offer.employment_type.name }}</span>
           <span class="badge badge-category">{{ offer.category }}</span>
         </div>
       </div>
@@ -43,26 +43,44 @@ onMounted(readOffer)
 
         <div class="offer-details">
           <div class="detail-row">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
             </svg>
             <span>{{ offer.location }}</span>
           </div>
 
           <div class="detail-row">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             <span>{{ offer.participants_count }} postulants</span>
           </div>
 
           <div class="detail-row">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
             </svg>
             <span>{{ offer.created_at }}</span>
           </div>
@@ -80,15 +98,54 @@ onMounted(readOffer)
       </div>
 
       <div class="card-footer">
-        <a href="/offers/UpdateOffer" class="btn-apply">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-    </svg>
+        <a href="/offers/UpdateOffer" class="btn btn-update">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293z"
+            />
+            <path
+              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 
+        0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 
+        0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 
+        1.5 0 0 0 1 2.5z"
+            />
+          </svg>
           Modifier
         </a>
-      </div>
 
+        <button type="button" class="btn btn-delete" title="Supprimer cette demande">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 
+        1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 
+        0 2-2V4h.5a1 1 0 0 0 1-1V2a1 
+        1 0 0 0-1-1H10a1 1 0 0 
+        0-1-1H7a1 1 0 0 0-1 1zm3 
+        4a.5.5 0 0 1 .5.5v7a.5.5 
+        0 0 1-1 0v-7a.5.5 0 
+        0 1 .5-.5M8 5a.5.5 0 
+        0 1 .5.5v7a.5.5 0 
+        0 1-1 0v-7A.5.5 0 
+        0 1 8 5m3 .5v7a.5.5 
+        0 0 1-1 0v-7a.5.5 
+        0 0 1 1 0"
+            />
+          </svg>
+          Supprimer
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -250,43 +307,73 @@ h1 {
   color: #1976d2;
 }
 
+.badge-employment {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
 /* Pied de carte */
 .card-footer {
   padding: 16px 20px;
   border-top: 2px solid #f0f0f0;
   display: flex;
   justify-content: center;
+  gap: 12px;
 }
 
-.btn-apply {
+/* ==== Boutons de base ==== */
+.btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn svg {
+  transition: transform 0.3s ease;
+}
+
+/* ==== Bouton Modifier ==== */
+.btn-update {
   padding: 12px 24px;
   background: white;
   color: #3498db;
   border: 2px solid #3498db;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 }
 
-.btn-apply:hover {
+.btn-update:hover {
   background: #3498db;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
-.btn-apply svg {
-  transition: transform 0.3s ease;
+.btn-update:hover svg {
+  transform: translateY(2px);
 }
 
-.btn-apply:hover svg {
-  transform: translateY(2px);
+/* ==== Bouton Supprimer ==== */
+.btn-delete {
+  padding: 10px 20px;
+  background: transparent;
+  color: #dc3545;
+  border: 2px solid #dc3545;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
+}
+
+.btn-delete:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 /* Bouton cœur (favoris) */

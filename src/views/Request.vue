@@ -1,5 +1,24 @@
 <script setup>
-import ImagesLogo from '../assets/images/logo_portal_job.png'
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+
+// ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
+const requests = ref([])
+
+// console.log('Je suis dans la console')
+
+const readRequest = async () => {
+  // temps de chargement front plus rapide, avec la donnée qui arrive
+  try {
+    const responses = await axios.get('http://127.0.0.1:8000/api/allRequest')
+    requests.value = responses.data.data
+    // console.log(requests.value)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+onMounted(readRequest)
 </script>
 
 <template>
@@ -10,32 +29,27 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
     </div>
 
     <div class="requests-grid">
-      <div class="request-card">
+      <div class="request-card" v-for="request in requests" :key="request.id">
         <div class="card-header">
           <div class="user-avatar">
-            <img :src="ImagesLogo" alt="Photo Utilisateur" />
+            <img :src="'http://127.0.0.1:8000/storage/' + request.photo" alt="Photo Utilisateur" />
           </div>
           <div class="user-info">
-            <h3 class="user-name">Julien Dupont</h3>
-            <span class="badge badge-type">Stage</span>
+            <h3 class="user-name">{{ request.nom }} {{ request.prenom }}</h3>
+            <p class="user-name">{{ request.qualification }}</p>
           </div>
         </div>
 
         <div class="card-body">
-          <h4 class="request-title">Demande de stage</h4>
-          <p class="request-description">
-            Recherche un stage en développement web pour 6 mois.
-          </p>
+          <h4 class="request-title">{{ request.title }}</h4>
+          <h4 class="request-type">{{ request.type }}</h4>
+          <p class="request-description">{{ request.description }}</p>
 
           <div class="request-meta">
             <div class="meta-item">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              <span>15/10/2025</span>
+              <span>{{ request.created_at }}</span>
             </div>
-            <span class="badge badge-pending">En attente</span>
+            <span class="badge badge-pending">{{ request.status }}</span>
           </div>
         </div>
 
@@ -53,67 +67,7 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
               />
             </svg>
           </button>
-          
-          <button type="button" class="btn-toggle" title="Valider/Changer le statut">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
 
-      <div class="request-card">
-        <div class="card-header">
-          <div class="user-avatar">
-            <img :src="ImagesLogo" alt="Logo Entreprise" />
-          </div>
-          <div class="user-info">
-            <h3 class="user-name">TechNova</h3>
-            <span class="badge badge-type">CDI</span>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <h4 class="request-title">Recrutement développeur</h4>
-          <p class="request-description">
-            Recherche un développeur fullstack pour renforcer l'équipe.
-          </p>
-
-          <div class="request-meta">
-            <div class="meta-item">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-              <span>20/10/2025</span>
-            </div>
-            <span class="badge badge-active">En cours</span>
-          </div>
-        </div>
-
-        <div class="card-footer card-actions">
-          <button type="button" class="btn-delete" title="Supprimer cette demande">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
-              />
-            </svg>
-          </button>
-          
           <button type="button" class="btn-toggle" title="Valider/Changer le statut">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -184,7 +138,7 @@ h1 {
 /* En-tête de carte */
 .card-header {
   padding: 20px;
-  background: linear-gradient(135deg,#ffffff 50%, #d3d7ec 0%);
+  background: linear-gradient(135deg, #ffffff 50%, #d3d7ec 0%);
   border-bottom: 2px solid black;
   display: flex;
   align-items: center;
@@ -235,6 +189,15 @@ h1 {
   margin: 0;
 }
 
+.request-type {
+  background: #093eee85;
+  color: #856404;
+  padding: 8px 10px;
+  border-radius: 20px;
+  color: white;
+  width: 30%;
+}
+
 .request-description {
   font-size: 0.9rem;
   color: #666;
@@ -265,11 +228,6 @@ h1 {
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.8rem;
-}
-
-.badge-type {
-  background: #e3f2fd;
-  color: #1976d2;
 }
 
 .badge-pending {
@@ -338,7 +296,6 @@ h1 {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
-
 
 /* Responsive */
 @media (max-width: 1350px) {

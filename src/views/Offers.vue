@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
 
 // ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
-const offers = ref([]);
+const offers = ref([])
 
 // console.log('Je suis dans la console')
 
@@ -16,7 +16,7 @@ const readOffer = async () => {
   } catch (err) {
     console.log(err)
   }
-  }
+}
 
 onMounted(readOffer)
 </script>
@@ -29,11 +29,14 @@ onMounted(readOffer)
 
   <div class="offers-grid">
     <div class="offer-card" v-for="offer in offers" :key="offer.id">
-      
       <div class="card-image">
         <img :src="offer.image_url" alt="Image offre" />
         <div class="image-overlay">
-          <span class="badge badge-category">{{ offer.category }}</span>
+          <span class="badge badge-employment">{{ offer.employment_type.name }}</span>
+          <span class="badge badge-category">{{ offer.category }}</span
+          ><br /><br />
+
+          <!-- je dois avoir ci-dessous le name de l'id en question -->
         </div>
       </div>
 
@@ -43,26 +46,44 @@ onMounted(readOffer)
 
         <div class="offer-details">
           <div class="detail-row">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
             </svg>
             <span>{{ offer.location }}</span>
           </div>
 
           <div class="detail-row">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             <span>{{ offer.participants_count }} postulants</span>
           </div>
 
           <div class="detail-row">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
             </svg>
             <span>{{ offer.created_at }}</span>
           </div>
@@ -81,17 +102,24 @@ onMounted(readOffer)
 
       <div class="card-footer">
         <a href="/Home/apply" class="btn-apply">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293z"
+            />
           </svg>
           Postuler à l'offre
         </a>
 
-        <a href="favoris" class="btn-heart" style="margin: 2%;">
+        <a href="favoris" class="btn-heart" style="margin: 2%">
           <span style="font-size: 35px">♡</span>
         </a>
       </div>
-
     </div>
   </div>
 </template>
@@ -249,6 +277,11 @@ h1 {
 }
 
 .badge-category {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-employment {
   background: #e3f2fd;
   color: #1976d2;
 }

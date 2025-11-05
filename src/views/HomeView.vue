@@ -1,13 +1,13 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
 import ImagesLogo from '../assets/images/imagePortal.png'
 import axios from 'axios'
 
 // ref est une syntaxe qui permet de dynamiser une variable pour l'afficher
-const nbUser = ref([]);
-const nbOffer = ref([]);
-const nbCompany = ref([]);
-const offers = ref([]);
+const nbUser = ref([])
+const nbOffer = ref([])
+const nbCompany = ref([])
+const offers = ref([])
 
 // console.log('Je suis dans la console')
 
@@ -23,7 +23,6 @@ const count = async () => {
     console.log(err)
   }
 }
-
 onMounted(count)
 
 const readOffer = async () => {
@@ -35,8 +34,7 @@ const readOffer = async () => {
   } catch (err) {
     console.log(err)
   }
-  }
-
+}
 onMounted(readOffer)
 </script>
 
@@ -80,7 +78,7 @@ onMounted(readOffer)
   </div>
 
   <div class="offers-section">
-    <h1>Tiens un avant gout de nos offres en ligne !!</h1>
+    <h1>Tenez un avant goût de nos offres en ligne !</h1>
 
     <div class="offer-row" v-for="offer in offers.slice(0, 2)" :key="offer.id">
       <!-- Carte de l'offre -->
@@ -90,9 +88,7 @@ onMounted(readOffer)
         <!-- en Vue il ne faut pas mettre de double moustaches {{ }} dans un binding dynamique (:) -->
 
         <div class="more-section">
-          <a href="/SignIn" class="more-btn" title="Voir plus d'offre">
-            Voir plus !
-          </a>
+          <a href="/SignIn" class="more-btn" title="Voir plus d'offre"> Voir plus ! </a>
         </div>
       </div>
 
@@ -101,6 +97,7 @@ onMounted(readOffer)
         <h3>Détails de l'offre</h3>
         <div class="detail-item"><strong>Titre :</strong> {{ offer.title }}</div>
         <div class="detail-item"><strong>Description :</strong> {{ offer.description }}</div>
+        <div class="detail-item"><strong>Contrat :</strong> {{ offer.employment_type.name }}</div>
         <div class="detail-item"><strong>Mission :</strong> {{ offer.mission }}</div>
         <div class="detail-item"><strong>Lieu :</strong> {{ offer.location }}</div>
         <div class="detail-item"><strong>Poste :</strong> {{ offer.category }}</div>

@@ -11,7 +11,7 @@ import ImagesLogo from '../assets/images/imagePortal.png'
       alt="Photo de profil"
       width="300px"
     />
-    <a href="/profil/updateProfil">
+    <a href="/Profil/UpdateProfil">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -31,17 +31,17 @@ import ImagesLogo from '../assets/images/imagePortal.png'
     </a>
 
     <div class="profil-info">
-      <h3>Julien Dupont</h3>
-      <p><span>Email :</span> julien.dupont@example.com</p>
+      <h3>Seghiri Ahmed</h3>
+      <p><span>Email :</span> seghiriahmed9@gmail.com</p>
       <p><span>Téléphone :</span> 06 12 34 56 78</p>
-      <p><span>Ville :</span> Lyon (69003)</p>
+      <p><span>Ville :</span> Paris (75000)</p>
       <p>
         <span>CV :</span>
-        <a href="#" target="_blank">Voir le CV</a>
+        <a href="#" target="_blank">\'Voir le CV'/</a>
       </p>
-      <p><span>Qualification :</span> Ingénieur logiciel</p>
-      <p><span>Disponible :</span> Oui</p>
-      <p><span>Rôle :</span> client</p>
+      <p><span>Qualification :</span> Etudiant</p>
+      <p><span>Disponible :</span> NON</p>
+      <p><span>Rôle :</span> Admin</p>
     </div>
   </div>
 </template>
@@ -49,124 +49,103 @@ import ImagesLogo from '../assets/images/imagePortal.png'
 <style scoped>
 /* Container */
 .profil-container {
-  background-color: #110f0f3a;
-  border-radius: 20px;
-  padding: 2rem 2rem;
-  max-width: 30%;
-  margin: auto;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 450px;
+  margin: 2rem auto;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
   text-align: center;
-  position: relative;
-  transition: transform 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .profil-container:hover {
-  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* Image profil */
 .profil-photo {
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
-  border: 5px solid #fff;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 4px solid #f0f0f0;
   margin-bottom: 1.5rem;
   transition: transform 0.3s ease;
 }
+
 .profil-photo:hover {
   transform: scale(1.05);
 }
 
-/* Infos */
+/* Nom */
 .profil-info h3 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #222;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
 }
 
+/* Infos */
 .profil-info p {
-  font-size: 1.05rem;
-  margin: 0.5rem 0;
-  color: #555;
+  font-size: 1rem;
+  margin: 0.85rem 0;
+  color: #5a6c7d;
   line-height: 1.6;
 }
 
 .profil-info span {
   font-weight: 600;
-  color: #0d6efd;
+  color: #2c3e50;
 }
 
 /* Lien CV */
 .profil-info a {
   display: inline-block;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   color: #0d6efd;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
-  transition: color 0.3s ease;
-  text-decoration: underline;
-}
-.profil-info a:hover {
-  color: #0a58ca;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s ease;
 }
 
-/* Bouton Modifier */
+.profil-info a:hover {
+  border-bottom-color: #0d6efd;
+}
+
+/* Bouton */
 .profil-actions {
   margin-top: 2rem;
 }
+
 .btn-edit-profil {
-  background: linear-gradient(135deg, #0d6efd, #0a58ca);
+  background: #0d6efd;
   color: #fff;
-  padding: 10px 24px;
+  padding: 12px 32px;
   font-size: 1rem;
+  font-weight: 600;
   border: none;
-  border-radius: 50px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.btn-edit-profil:hover {
+  background: #0b5ed7;
+  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
 }
-.btn-edit-profil:hover {
-  background: linear-gradient(135deg, #0a58ca, #0942a1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(13, 110, 253, 0.45);
+
+.btn-edit-profil:active {
+  transform: translateY(0);
 }
 
-/* responsive fait par chat gpt car je ne connais et comprends pas */
-
-@media (max-width: 1024px) {
-  .profil-container {
-    padding: 1.5rem 1.5rem;
-  }
-
-  .profil-photo {
-    width: 140px;
-    height: 140px;
-  }
-
-  .profil-info h3 {
-    font-size: 1.4rem;
-  }
-
-  .profil-info p {
-    font-size: 1rem;
-  }
-
-  .btn-edit-profil {
-    padding: 8px 20px;
-    font-size: 0.95rem;
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
   .profil-container {
-    width: 90%;
-    margin-top: 4%;
-    padding: 1.2rem 1.2rem;
+    max-width: 90%;
+    padding: 2rem;
   }
 
   .profil-photo {
@@ -175,22 +154,17 @@ import ImagesLogo from '../assets/images/imagePortal.png'
   }
 
   .profil-info h3 {
-    font-size: 1.3rem;
-  }
-
-  .profil-info p {
-    font-size: 0.95rem;
+    font-size: 1.5rem;
   }
 
   .btn-edit-profil {
     width: 100%;
-    padding: 10px 0;
   }
 }
 
 @media (max-width: 480px) {
   .profil-container {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
   .profil-photo {
@@ -199,16 +173,11 @@ import ImagesLogo from '../assets/images/imagePortal.png'
   }
 
   .profil-info h3 {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
   }
 
   .profil-info p {
-    font-size: 0.9rem;
-  }
-
-  .btn-edit-profil {
-    font-size: 0.9rem;
-    padding: 8px 0;
+    font-size: 0.95rem;
   }
 }
 </style>
