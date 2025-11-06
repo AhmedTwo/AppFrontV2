@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import Connexion from '../views/SignIn.vue'
 import Inscription from '../views/SignUp.vue'
 import Password from '../views/PasswordForget.vue'
-import ApplyCompany from '../views/ApplyCompany.vue'
+import ApplyCompany from '../views/AddCompany.vue'
 import Accueil from '../views/Home.vue'
 import Apply from '../views/ApplyOffer.vue'
 import Offers from '../views/Offers.vue'
@@ -47,7 +47,7 @@ const router = createRouter({
       component: Password,
     },
     {
-      path: '/SignIn/applyCompany',
+      path: '/SignIn/AddCompany',
       name: 'ajoutSociete',
       component: ApplyCompany,
     },

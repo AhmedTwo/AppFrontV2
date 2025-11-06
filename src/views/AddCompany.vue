@@ -110,91 +110,151 @@
 </template>
 
 <style scoped>
-/* Conteneur principal */
+/* COULEURS */
+/* Bleu principal: #0d6efd */
+/* Couleur de fond de page: #f8f9fa */
+/* Couleur de texte: #212529 */
+/* Bordure input: #ced4da */
+/* Ombre carte: 0 5px 12px rgba(0, 0, 0, 0.05) */
+
+/* -------------------
+   CONTENEUR GLOBAL
+   ------------------- */
+
 #containerFirst {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8%;
+  background-color: #f8f9fa;
+  padding: 35px 0;
 }
 
-/* Formulaire */
+/* -------------------
+   CARTE DU FORMULAIRE COMPACT
+   ------------------- */
+
 #containerSecond {
   background-color: #ffffff;
-  padding: 1rem 1.5rem;
-  border: 1px solid black;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.637);
-  width: 60%; /*  élargi à 60% pour 2 colonnes */
-  max-width: 800px; /*  plus grand max */
-  margin-top: 3%;
+  padding: 20px; /* Réduction du padding */
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05); /* Ombre très légère */
+  width: 95%;
+  max-width: 950px; /* Augmenté légèrement pour étaler les 16 champs */
+  margin: 0;
 }
 
 /* Titre */
 .h1AddCompany {
   text-align: center;
-  font-size: 2rem;
-  color: black;
-  margin-bottom: 2rem;
+  font-size: 1.8rem; /* Titre plus petit */
+  color: #212529;
+  font-weight: 700;
+  margin-bottom: 15px; /* Réduction de la marge */
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
 }
+
+/* -------------------
+   GRILLE DU FORMULAIRE (2 COLONNES)
+   ------------------- */
 
 #addCompanyForm {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 10px; /* Très petit gap entre les champs pour économiser de l'espace */
   justify-content: space-between;
 }
 
 .divAdd {
-  flex: 1 1 calc(50% - 1rem); /* 2 champs par ligne */
+  /* Assure 2 colonnes sur desktop */
+  flex: 1 1 calc(50% - 5px); /* Calcul adapté au gap de 10px */
   display: flex;
   flex-direction: column;
 }
 
 .divAdd label {
   font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: black;
+  margin-bottom: 3px; /* Marge minimale */
+  color: #212529;
+  font-size: 0.85rem; /* Très petit label */
+  text-transform: uppercase;
 }
 
 .divAdd input {
-  padding: 0.5rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.671);
-  border-radius: 5px;
+  padding: 8px 8px; /* Padding minimaliste */
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .divAdd input:focus {
-  border-color: #007bff;
-  outline: none; /* ca supprime le contour du focus ajouté par le navigateur. */
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+  outline: none;
 }
 
-/* 🟢Les éléments qui doivent prendre toute la largeur */
-.divAdd.radio-box,
-.divAdd:last-of-type,
+/* -------------------
+   ÉLÉMENTS PLEINE LARGEUR
+   ------------------- */
+
+/* Le dernier élément (bouton) prend toute la largeur */
 .btn {
   flex: 1 1 100%;
 }
 
-/* Bouton */
+/* Gestion du champ de fichier (pour qu'il ne soit pas trop haut) */
+.divAdd input[type='file'] {
+  padding: 6px 8px;
+}
+
+/* -------------------
+   BOUTON
+   ------------------- */
+
 .btn {
-  padding: 0.8rem;
+  padding: 10px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--primary);
-  border: 2px solid var(--primary);
-  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  background-color: #0d6efd;
+  box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+  margin-top: 15px;
 }
 
 .btn:hover {
-  background-color: var(--primary);
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  background-color: #0b5ed7;
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
 }
 
-#button:hover {
-  background-color: #0056b3;
+/* -------------------
+   RESPONSIVE (Mode Colonne Ultra-Compact)
+   ------------------- */
+
+@media (max-width: 900px) {
+  /* Passage à une seule colonne pour maximiser la hauteur verticale disponible */
+  .divAdd {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  #containerSecond {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .h1AddCompany {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
 }
 </style>

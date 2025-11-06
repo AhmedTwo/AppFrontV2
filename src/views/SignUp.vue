@@ -5,7 +5,9 @@ import ImagesPortal from '../assets/images/Portal.png'
 <template>
   <div id="containerFirst">
     <div id="containerSecond">
-      <h1 class="h1Add"> INSCRIPTION &nbsp;&nbsp; <img :src="ImagesPortal" alt="fond logo porte de portal job" width="35" />
+      <h1 class="h1Add">
+        INSCRIPTION &nbsp;&nbsp;
+        <img :src="ImagesPortal" alt="fond logo porte de portal job" width="35" />
       </h1>
 
       <form id="addForm" method="POST" action="/inscription/addUser/" enctype="multipart/form-data">
@@ -74,149 +76,218 @@ import ImagesPortal from '../assets/images/Portal.png'
 </template>
 
 <style scoped>
-/* Conteneur principal */
+/* COULEURS */
+/* Bleu principal: #0d6efd */
+/* Couleur de fond de page: #f8f9fa */
+/* Couleur de texte: #212529 */
+/* Bordure input: #ced4da */
+/* Ombre carte: 0 8px 15px rgba(0, 0, 0, 0.08) */
+
+/* -------------------
+   CONTENEUR GLOBAL
+   ------------------- */
+
 #containerFirst {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8%;
+  background-color: #f8f9fa;
+  padding: 70px 0; /* Réduction du padding général */
+}
+
+/* -------------------
+   CARTE DU FORMULAIRE COMPACT
+   ------------------- */
+
+#containerSecond {
+  background-color: #ffffff;
+  padding: 25px; /* Réduction du padding de la carte */
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08); /* Ombre plus légère */
+  width: 95%;
+  max-width: 800px; /* Légère réduction de la largeur max */
+  margin-top: 0;
 }
 
 /* Titre */
 .h1Add {
   text-align: center;
-  font-size: 2rem;
-  color: black;
-  margin-bottom: 2rem;
+  font-size: 2rem; /* Réduction de la taille du titre */
+  color: #212529;
+  font-weight: 700;
+  margin-bottom: 20px; /* Réduction de la marge */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef; /* Bordure plus fine */
 }
 
-/* Formulaire */
-#containerSecond {
-  background-color: #ffffff;
-  padding: 1rem 1.5rem;
-  border: 1px solid black;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.637);
-  width: 60%; /*  élargi à 60% pour 2 colonnes */
-  max-width: 800px; /*  plus grand max */
-  margin-top: 4%;
-}
+/* -------------------
+   GRILLE DU FORMULAIRE (2 COLONNES)
+   ------------------- */
 
 #addForm {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 15px; /* Réduction du gap entre les champs */
   justify-content: space-between;
 }
 
 .divAdd {
-  flex: 1 1 calc(50% - 1rem); /* 2 champs par ligne */
+  /* Assure 2 colonnes sur desktop */
+  flex: 1 1 calc(50% - 7.5px); /* Calcul adapté au nouveau gap */
   display: flex;
   flex-direction: column;
 }
 
 .divAdd label {
   font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: black;
+  margin-bottom: 5px; /* Forte réduction de la marge du label */
+  color: #212529;
+  font-size: 0.9rem; /* Réduction de la taille du label */
 }
 
-.divAdd input {
-  padding: 0.5rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.671);
-  border-radius: 5px;
+.divAdd input[type='text'],
+.divAdd input[type='email'],
+.divAdd input[type='password'],
+.divAdd input[type='file'] {
+  padding: 8px 10px; /* Forte réduction du padding des inputs */
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem; /* Réduction de la taille du texte dans l'input */
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .divAdd input:focus {
-  border-color: #007bff;
-  outline: none; /* ca supprime le contour du focus ajouté par le navigateur. */
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2); /* Ombre de focus plus petite */
+  outline: none;
 }
 
-/* Les éléments qui doivent prendre toute la largeur */
+/* -------------------
+   ÉLÉMENTS PLEINE LARGEUR
+   ------------------- */
+
 .divAdd.radio-box,
-.divAdd:last-of-type,
 .btn {
   flex: 1 1 100%;
 }
 
-/* Bouton */
-.btn {
-  padding: 0.8rem;
-  font-size: 1rem;
+/* Gestion spécifique des labels pour les champs de fichiers (pour éviter qu'ils ne débordent) */
+.divAdd:last-of-type {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.divAdd:last-of-type label {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.divAdd:last-of-type input[type='file'] {
+  flex-grow: 1;
+  border: none;
+  padding: 0;
+}
+
+/* Style de la boîte radio */
+.radio-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  padding: 5px 0;
+}
+
+.radio-box p {
   font-weight: 600;
+  margin: 0;
+  color: #212529;
+  font-size: 0.9rem;
+}
+
+.radio-box label {
+  font-weight: normal;
+  margin: 0;
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--primary);
-  border: 2px solid var(--primary);
-  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.radio-box input[type='radio'] {
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+}
+
+/* -------------------
+   BOUTON
+   ------------------- */
+
+.btn {
+  padding: 10px; /* Réduction du padding du bouton */
+  font-size: 1rem; /* Réduction de la taille du bouton */
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+  border: none;
+  border-radius: 8px; /* Coins légèrement moins arrondis */
+  color: white;
+  background-color: #0d6efd;
+  box-shadow: 0 3px 8px rgba(13, 110, 253, 0.2);
+  margin-top: 10px; /* Réduction de la marge au-dessus du bouton */
 }
 
 .btn:hover {
-  background-color: var(--primary);
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  background-color: #0b5ed7;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+  transform: none; /* Supprimer la translation pour un look plus plat et compact */
 }
 
-#button:hover {
-  background-color: #0056b3;
-}
+/* -------------------
+   RESPONSIVE (Ajustements compressés)
+   ------------------- */
 
-/* responsive fait par chat gpt car je ne connais et comprends pas */
-
-@media (max-width: 1024px) {
-  #form {
-    grid-template-columns: 1fr 1fr; /* garde 2 colonnes mais plus espacées */
-    gap: 1rem 1.5rem;
-  }
-
-  .container {
-    padding: 2rem 3rem;
+@media (max-width: 850px) {
+  /* La grille bascule en une seule colonne sur les écrans de taille moyenne */
+  .divAdd {
+    flex: 1 1 100%;
   }
 }
 
-@media (max-width: 768px) {
-  #form {
-    grid-template-columns: 1fr; /* 1 colonne sur tablette */
+@media (max-width: 600px) {
+  #containerSecond {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .h1Add {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+  }
+
+  .divAdd:last-of-type {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .divAdd:last-of-type label {
+    width: 100%;
+    margin-bottom: 0;
   }
 
   .radio-box {
-    grid-column: span 1;
-  }
-
-  .btn {
-    grid-column: span 1;
-  }
-
-  .container {
-    padding: 2rem;
-  }
-
-  .titleH1 {
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 1.5rem;
-  }
-
-  .titleH1 {
-    font-size: 1.7rem;
-  }
-
-  .field input[type='text'],
-  .field input[type='email'],
-  .field input[type='password'],
-  .field input[type='file'] {
-    font-size: 0.95rem;
-    padding: 0.6rem;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 0.8rem;
+    flex-wrap: wrap;
   }
 }
 </style>

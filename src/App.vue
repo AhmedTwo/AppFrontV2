@@ -90,6 +90,7 @@ onMounted(() => {
       </div>
     </nav>
   </header>
+
   <main>
     <RouterView />
   </main>
@@ -100,8 +101,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Les styles restent identiques, ils s'appliqueront aux deux versions du menu */
-
 .logo img {
   width: 250px;
 }

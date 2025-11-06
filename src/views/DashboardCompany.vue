@@ -151,196 +151,284 @@ onMounted(readOffer)
 </template>
 
 <style scoped>
-/* En-tête */
+/* COULEURS UTILES */
+/* Primaire (Modif/Accentuation) : #3498db (Bleu) */
+/* Secondaire (Supprimer) : #dc3545 (Rouge) */
+/* Fond de carte : #ffffff */
+/* Fond de page : #f8f9fa (implicite par l'absence de couleur de fond globale) */
+
+/* -------------------
+   EN-TÊTE
+   ------------------- */
 .header-section {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
+  padding: 0 20px;
 }
 
 h1 {
   font-size: 2.2rem;
   font-weight: 700;
-  color: black;
+  color: #1e293b; /* Couleur de titre sombre */
   letter-spacing: -0.5px;
 }
 
 .subtitle {
-  font-size: 1rem;
-  color: #666;
-  font-weight: 500;
+  font-size: 1.1rem;
+  color: #64748b;
+  font-weight: 400;
+  letter-spacing: 0.3px;
 }
 
-/* Grille des offres */
+/* -------------------
+   GRILLE DES OFFRES
+   ------------------- */
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-  max-width: 1300px;
-  margin: 20px auto;
-  margin-bottom: 2%;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+  max-width: 1100px;
+  margin: 20px auto 60px;
+  padding: 0 24px;
 }
 
-/* Carte d'offre */
+/* -------------------
+   CARTE D'OFFRE (DESIGN MODERNE)
+   ------------------- */
 .offer-card {
   background: white;
-  border-radius: 8%;
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s;
-  border: 1px solid rgba(0, 0, 0, 0.253);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.offer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3498db, #2ecc71, #3498db);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 10;
+}
+
+.offer-card:hover::before {
+  opacity: 1;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .offer-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.445);
+  transform: translateY(-12px) scale(1.02);
+  box-shadow:
+    0 25px 50px -12px rgba(52, 152, 219, 0.25),
+    0 12px 24px -8px rgba(0, 0, 0, 0.1);
   border-color: #3498db;
 }
 
 /* Image de la carte */
 .card-image {
   position: relative;
-  height: 200px;
+  height: 160px; /* Taille ajustée */
   overflow: hidden;
-  background: linear-gradient(135deg, #ffffff 50%, #d3d7ec 0%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+  pointer-events: none;
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .offer-card:hover .card-image img {
-  transform: scale(1.05);
+  transform: scale(1.1) rotate(1deg);
 }
 
 .image-overlay {
   position: absolute;
   top: 15px;
   right: 15px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* Badges */
+.badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.badge-category {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.9) 0%, rgba(41, 128, 185, 0.9) 100%);
+  color: white;
+}
+
+.badge-employment {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.9) 0%, rgba(39, 174, 96, 0.9) 100%);
+  color: white;
 }
 
 /* Corps de carte */
 .card-body {
-  padding: 20px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
+  background: white;
 }
 
 .offer-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: black;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  transition: color 0.3s ease;
+}
+
+.offer-card:hover .offer-title {
+  color: #3498db;
 }
 
 .offer-description {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 0.85rem;
+  color: #64748b;
   line-height: 1.5;
   margin: 0;
 }
 
-/* Détails de l'offre */
+/* Détails de l'offre (icônes) */
 .offer-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px; /* Espace réduit */
+  margin-top: 2px;
 }
 
 .detail-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #666;
-  font-size: 0.9rem;
+  padding: 6px 10px; /* Padding réduit */
+  background: #f8fafc;
+  border-radius: 6px;
+  font-size: 0.8rem; /* Taille de police réduite */
+  transition: all 0.3s ease;
+}
+
+.detail-row:hover {
+  background: #e9f3fe; /* Changement de fond au survol */
+  transform: translateX(3px); /* Effet plus subtil */
 }
 
 .icon {
-  width: 18px;
-  height: 18px;
+  width: 16px; /* Icône plus petite */
+  height: 16px;
   color: #3498db;
   flex-shrink: 0;
+}
+
+.detail-row span {
+  color: #475569;
+  font-weight: 500;
 }
 
 /* Sections mission et avantages */
 .mission-section,
 .benefits-section {
-  margin-top: 8px;
-  padding: 12px;
-  background: #f8f9fa;
+  margin-top: 2px;
+  padding: 10px; /* Padding réduit */
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.78rem; /* Taille de police très réduite */
+  border: 1px solid #bae6fd;
 }
 
 .mission-section strong,
 .benefits-section strong {
-  color: black;
+  color: #0c4a6e;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .mission-section p,
 .benefits-section p {
   margin: 0;
-  color: #666;
+  color: #0369a1;
   line-height: 1.4;
 }
 
-/* Badges */
-.badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
+/* -------------------
+   PIED DE CARTE (BOUTONS)
+   ------------------- */
 
-.badge-category {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.badge-employment {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-/* Pied de carte */
 .card-footer {
-  padding: 16px 20px;
-  border-top: 2px solid #f0f0f0;
+  padding: 14px 18px;
+  border-top: 1px solid #f1f5f9;
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, transparent 0%, #f8fafc 100%);
 }
 
-/* ==== Boutons de base ==== */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 10px;
+  font-size: 0.9rem; /* Taille de police ajustée */
+  border-radius: 8px;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  padding: 10px 18px; /* Padding standard pour les boutons */
 }
 
 .btn svg {
   transition: transform 0.3s ease;
 }
 
-/* ==== Bouton Modifier ==== */
+/* ==== Bouton Modifier (Bleu) ==== */
 .btn-update {
-  padding: 12px 24px;
   background: white;
   color: #3498db;
   border: 2px solid #3498db;
@@ -354,18 +442,11 @@ h1 {
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
-.btn-update:hover svg {
-  transform: translateY(2px);
-}
-
-/* ==== Bouton Supprimer ==== */
+/* ==== Bouton Supprimer (Rouge) ==== */
 .btn-delete {
-  padding: 10px 20px;
   background: transparent;
   color: #dc3545;
   border: 2px solid #dc3545;
-  border-radius: 10px;
-  font-size: 0.9rem;
   box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
 }
 
@@ -376,16 +457,14 @@ h1 {
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
-/* Bouton cœur (favoris) */
-.btn-heart {
-  text-decoration: none;
-  color: #ccc;
-}
+/* -------------------
+   RESPONSIVE
+   ------------------- */
 
-/* Responsive */
 @media (max-width: 1024px) {
   .offers-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
   }
 }
 
@@ -396,11 +475,22 @@ h1 {
 
   .offers-grid {
     grid-template-columns: 1fr;
-    padding: 0 15px;
+    padding: 0 16px;
+    gap: 24px;
   }
 
   .card-image {
     height: 180px;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

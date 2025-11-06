@@ -87,7 +87,7 @@ const loginUser = async () => {
 
         <div id="inscri_apply">
           <p>Vous n'avez pas de compte ? <a href="/SignUp/addUser/">Inscription !</a></p>
-          <p>Vous êtes une Société ? <a href="/SignIn/applyCompany">Rejoignez-nous !</a></p>
+          <p>Vous êtes une Société ? <a href="/SignIn/AddCompany/">Rejoignez-nous !</a></p>
           <br />
         </div>
         <button type="submit" id="sign_in">Se connecter !</button>
@@ -97,6 +97,10 @@ const loginUser = async () => {
 </template>
 
 <style scoped>
+/* -------------------
+   FOND ET CONTENEUR GLOBAL
+   ------------------- */
+
 .background-logo {
   position: fixed;
   top: 0;
@@ -104,43 +108,65 @@ const loginUser = async () => {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  opacity: 0.1; /* ajuste la transparence à mon goût */
+  opacity: 0.08;
   z-index: 1;
   pointer-events: none;
 }
 
-/* Conteneur principal */
 #containerFirst {
+  /* Bleu principal: #007bff */
+  /* Couleur de fond: #f4f6f9 */
+  /* Couleur de texte sombre: #212529 */
+  /* Ombre: 0 10px 25px rgba(0, 0, 0, 0.15) */
+  /* Bordure input: #ced4da */
+  /* Erreur: #dc3545 */
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-height: 77vh; /* viewport height, 1 vh = 1 % de la hauteur de la fenêtre d’affichage */
+  background-color: #f4f6f9;
+  padding: 80px;
+  box-sizing: border-box;
+  z-index: 2;
+  position: relative;
 }
 
-/* Titre */
+/* -------------------
+   CARTE DE CONNEXION
+   ------------------- */
+
+#containerSecond {
+  background-color: #ffffff; /* Remplacement de var(--card-background) */
+  padding: 30px;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Remplacement de var(--card-shadow) */
+  width: 100%;
+  max-width: 420px;
+  margin: 0;
+  z-index: 10;
+}
+
 .h1Login {
   text-align: center;
-  font-size: 2rem;
-  color: black;
-  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  color: #212529; /* Remplacement de var(--secondary-color) */
+  font-weight: 700;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Formulaire */
-#containerSecond {
-  background-color: #ffffff;
-  padding: 1rem 1.5rem;
-  border: 1px solid black;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.637);
-  width: 30%;
-  max-width: 400px;
-  margin-top: 4%;
-}
+/* -------------------
+   FORMULAIRE ET CHAMPS
+   ------------------- */
 
 #loginForm {
   display: flex;
   flex-direction: column;
+  gap: 15px;
 }
 
 .divLogin {
@@ -150,77 +176,122 @@ const loginUser = async () => {
 
 .divLogin label {
   font-weight: 600;
-  margin-bottom: 0.8rem;
-  color: black;
+  margin-bottom: 5px;
+  color: #212529; /* Remplacement de var(--secondary-color) */
+  font-size: 0.95rem;
 }
 
 .divLogin input {
-  padding: 0.5rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.671);
-  border-radius: 5px;
+  padding: 12px 10px;
+  border: 1px solid #ced4da; /* Remplacement de var(--input-border) */
+  border-radius: 8px;
+  font-size: 1rem;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .divLogin input:focus {
-  border-color: #007bff;
-  outline: none; /* ca supprime le contour du focus ajouté par le navigateur. */
+  border-color: #007bff; /* Remplacement de var(--primary-color) */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Message d'erreur */
+div[v-if='errorMessage'] span {
+  display: block;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545 !important; /* Remplacement de var(--error-color) */
+  border-radius: 5px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Liens génériques */
+p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #212529; /* Remplacement de var(--secondary-color) */
+  text-align: right;
+}
+
+a {
+  color: #007bff; /* Remplacement de var(--primary-color) */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
 }
 
 /* Liens inscription / société */
 #inscri_apply {
   text-align: center;
-  font-size: 1rem;
-  color: black;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
 }
 
-a {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: 700;
+#inscri_apply p {
+  text-align: center;
+  margin: 5px 0;
 }
 
-a:hover {
-  text-decoration: underline;
-}
+/* -------------------
+   BOUTON
+   ------------------- */
 
-/* Bouton */
 #sign_in {
-  padding: 0.8rem;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid var(--primary);
+  transition:
+    background-color 0.3s ease,
+    transform 0.1s;
+  border: none;
   border-radius: 10px;
   width: 100%;
-  color: black;
+  color: white;
+  background-color: #007bff; /* Remplacement de var(--primary-color) */
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+  margin-top: 15px;
 }
 
 #sign_in:hover {
-  background-color: rgba(106, 139, 247, 0.63);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  background-color: #0056b3;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  transform: translateY(-1px);
 }
 
-/* responsive fait par chat gpt car je ne connais et comprends pas */
+/* -------------------
+   RESPONSIVE
+   ------------------- */
 
-@media (max-width: 480px) {
-  .h1Login {
-    font-size: 1.8rem; /* titre plus petit */
-    margin-bottom: 1.5rem;
+@media (max-width: 550px) {
+  #containerSecond {
+    padding: 25px 20px;
+    max-width: 90%;
   }
 
-  #containerSecond {
-    padding: 1.5rem 1.2rem; /* réduit marges internes */
-    max-width: 95%; /* formulaire presque pleine largeur */
+  .h1Login {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
   }
 
   .divLogin input {
-    font-size: 0.95rem;
-    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
   }
 
-  #button {
-    width: 100%; /* bouton prend toute la largeur */
-    padding: 0.8rem;
+  #sign_in {
+    font-size: 1rem;
+    padding: 10px;
   }
 }
 </style>

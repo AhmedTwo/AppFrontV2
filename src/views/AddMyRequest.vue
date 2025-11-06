@@ -51,7 +51,7 @@
   max-width: 800px;
   margin: 60px auto;
   background: #fff;
-  padding: 40px;
+  padding: 35px;
   border-radius: 20px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
