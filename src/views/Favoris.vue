@@ -93,7 +93,7 @@ onMounted(readOffer)
       </div>
 
       <div class="card-footer">
-        <a href="/Home/apply" class="btn-apply">
+        <a :href="`/Home/Apply/${offer.id}`" class="btn-apply">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"

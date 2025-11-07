@@ -70,7 +70,7 @@ onMounted(readCompany)
 
       <!-- Pied de carte -->
       <div class="card-footer">
-        <a href="/companys/companyDetails" class="btn-details">
+        <a :href="`/Companys/CompanyDetails/${company.id}`" class="btn-details">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"

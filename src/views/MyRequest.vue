@@ -1,5 +1,70 @@
 <script setup>
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useRoute, useRouter } from 'vue-router'
+// Assurez-vous d'importer l'image si elle est utilisée dans le template
 import ImagesLogo from '../assets/images/logo_portal_job.png'
+
+const router = useRouter()
+const route = useRoute() // Ajout de useRouter pour la redirection après suppression
+
+// La variable qui contiendra le TABLEAU des demandes de l'utilisateur
+const requests = ref([]) // Initialise à un tableau vide
+const isLoading = ref(true)
+
+// Fonction de chargement des demandes de l'utilisateur connecté
+const loadRequestData = async () => {
+  // Récupère l'ID de l'utilisateur depuis l'URL (passé par le header)
+  const userId = route.params.id // C'est l'ID de l'utilisateur, pas de la demande !
+
+  //  on recup le token d'authentification depuis le localStorage
+  const token = localStorage.getItem('auth_token')
+
+  if (!userId || userId === 'null') {
+    // Vérifier aussi si la valeur est 'null' en chaîne
+    console.error('ID Utilisateur non trouvé ou non valide.')
+    isLoading.value = false
+    return
+  }
+
+  try {
+    isLoading.value = true
+
+    // Requête vers ton API Laravel avec le token dans les headers
+    const responses = await axios.get(`http://127.0.0.1:8000/api/requestsByUser/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    // Stocker les données. (Le backend renvoie maintenant le tableau de demandes)
+    requests.value = responses.data.data // variable du tableau vide ci-dessus
+  } catch (err) {
+    console.error(`Erreur lors du chargement des demandes pour l'utilisateur ID ${userId}:`, err) // alert('Impossible de charger les demandes.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Fonction de suppression (appel de l'API DELETE)
+const deleteRequest = async (requestId) => {
+  // on remplace l'alert() par une confirmation modale si possible, ici on simule.
+  if (confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
+    try {
+      // j'apl l'API DELETE
+      await axios.delete(`http://127.0.0.1:8000/api/deleteRequest/${requestId}`)
+
+      // Retirer la demande du tableau local sans recharger toute la page
+      requests.value = requests.value.filter((req) => req.id !== requestId)
+      console.log(`Demande ID ${requestId} supprimée.`)
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la demande:', err)
+      prompt('Erreur lors de la suppression. Veuillez réessayer.')
+    }
+  }
+}
+
+onMounted(loadRequestData)
 </script>
 
 <template>
@@ -10,6 +75,7 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
 
   <div class="action-bar">
     <a href="/myRequest/AddMyRequest" class="btn-add">
+      <!-- SVG ici... -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="18"
@@ -29,94 +95,35 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
   </div>
 
   <div class="requests-grid">
-    <!-- Exemple demande utilisateur -->
-    <div class="request-card">
-      <div class="card-header">
-        <div class="user-avatar">
-          <img :src="ImagesLogo" alt="Photo Utilisateur" />
-        </div>
-        <div class="user-info">
-          <h3 class="user-name">Julien Dupont</h3>
-          <span class="badge badge-type">Stage</span>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <h4 class="request-title">Demande de stage</h4>
-        <p class="request-description">Recherche un stage en développement web pour 6 mois.</p>
-
-        <div class="request-meta">
-          <div class="meta-item">
-            <svg
-              class="icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 6v6l4 2" />
-            </svg>
-            <span>15/10/2025</span>
-          </div>
-          <span class="badge badge-pending">En attente</span>
-        </div>
-      </div>
-
-      <div class="card-footer">
-        <button type="button" class="btn-update" title="Modifier cette demande">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-pencil-square"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-            />
-            <path
-              fill-rule="evenodd"
-              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-            />
-          </svg>
-          <a href="/myRequest/UpdateMyRequest" style="text-decoration: none">Modifier</a>
-        </button>
-        <button type="button" class="btn-delete" title="Supprimer cette demande">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
-            />
-          </svg>
-          Supprimer
-        </button>
-      </div>
+    <div v-if="isLoading" style="text-align: center; grid-column: 1 / -1; padding: 40px">
+      Chargement de vos demandes...
     </div>
 
-    <!-- Exemple demande entreprise -->
-    <div class="request-card">
+    <div
+      v-else-if="requests.length === 0"
+      style="text-align: center; grid-column: 1 / -1; padding: 40px"
+    >
+      <p>Vous n'avez pas encore de demande enregistrée.</p>
+    </div>
+
+    <div class="request-card" v-for="request in requests" :key="request.id">
       <div class="card-header">
         <div class="user-avatar">
-          <img :src="ImagesLogo" alt="Logo Entreprise" />
+          <img
+            :src="request.user_avatar || ImagesLogo"
+            :alt="`Photo de ${request.user_name || 'Utilisateur'}`"
+          />
         </div>
         <div class="user-info">
-          <h3 class="user-name">TechNova</h3>
-          <span class="badge badge-type">CDI</span>
+          <!-- Nom et Prénom sont séparés dans API -->
+          <h3 class="user-name">{{ request.prenom }} {{ request.nom }}</h3>
+          <span class="badge badge-type">{{ request.type }}</span>
         </div>
       </div>
 
       <div class="card-body">
-        <h4 class="request-title">Recrutement développeur</h4>
-        <p class="request-description">
-          Recherche un développeur fullstack pour renforcer l'équipe.
-        </p>
+        <h4 class="request-title">{{ request.title }}</h4>
+        <p class="request-description">{{ request.description }}</p>
 
         <div class="request-meta">
           <div class="meta-item">
@@ -130,9 +137,20 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
               <circle cx="12" cy="12" r="10" />
               <path d="M12 6v6l4 2" />
             </svg>
-            <span>20/10/2025</span>
+            <span>{{ request.created_at }}</span>
           </div>
-          <span class="badge badge-active">En cours</span>
+
+          <span
+            :class="[
+              'badge',
+              {
+                'badge-pending': request.status === 'En_attente',
+                'badge-active': request.status === 'Approuvée', // Ajoutez d'autres classes au besoin
+              },
+            ]"
+          >
+            {{ request.status }}
+          </span>
         </div>
       </div>
 
@@ -154,9 +172,17 @@ import ImagesLogo from '../assets/images/logo_portal_job.png'
               d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
             />
           </svg>
-          <a href="/myRequest/UpdateMyRequest" style="text-decoration: none">Modifier</a>
+          <a :href="`/myRequest/UpdateMyRequest/${request.id}`" style="text-decoration: none"
+            >Modifier</a
+          >
         </button>
-        <button type="button" class="btn-delete" title="Supprimer cette demande">
+
+        <button
+          type="button"
+          class="btn-delete"
+          title="Supprimer cette demande"
+          @click="deleteRequest(request.id)"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"

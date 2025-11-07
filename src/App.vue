@@ -4,8 +4,20 @@ import { RouterView, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import ImagesLogo from './assets/images/logo_portal_job.png'
 
-const router = useRouter()
 const userStore = useUserStore()
+const router = useRouter()
+
+// propriété calculée pour obtenir l'ID de l'utilisateur
+// ASSUMPTION : L'ID est stocké dans userStore.user.id
+const currentUserId = computed(() => {
+  // Vérifiez que userStore.user existe et que userStore.user.id est défini sinon null
+  return userStore.user && userStore.user.id ? userStore.user.id : null
+})
+
+// propriété calculée pour obtenir l'ID de la company de l'utilisateur
+const currentUserCompanyId = computed(() => {
+  return userStore.user && userStore.user.company_id ? userStore.user.company_id : null
+})
 
 const logout = () => {
   localStorage.removeItem('auth_token')
@@ -18,6 +30,20 @@ onMounted(() => {
     userStore.isAuthenticated = true
   }
 })
+
+// computed pour récupérer le prenom
+const UserName = computed(() => {
+  const prenom = userStore.user.prenom || ''
+  const nom = userStore.user.nom || ''
+  // on prend la première lettre du prénom, sinon du nom
+  return (prenom || '').toUpperCase() // pour la majuscule
+})
+
+// Vérifier si l'utilisateur est une company
+const isCompany = computed(() => userStore.user?.role === 'company')
+
+// Vérifier si l'utilisateur est admin
+const isAdmin = computed(() => userStore.user?.role === 'admin')
 </script>
 
 <template>
@@ -36,7 +62,7 @@ onMounted(() => {
       </div>
 
       <ul class="menu" v-if="!userStore.isAuthenticated">
-        <li><a href="/home" class="">Accueil</a></li>
+        <li><a href="/home" class="" v-if="userStore.isAuthenticated">Accueil</a></li>
         <li><a href="/offers" class="">Nos offres</a></li>
         <li><a href="/Companys" class="">Nos sociétés</a></li>
         <li><a href="/Contact" class="">Contact</a></li>
@@ -53,11 +79,15 @@ onMounted(() => {
           </ul>
         </li>
 
-        <li><a href="/MyRequest" class="">Mes demandes</a></li>
+        <li><a :href="`/myRequest/${currentUserId}`" class="">Mes demandes</a></li>
 
-        <li><a href="/Dashboard_Company" class="">Dashboard C</a></li>
+        <li>
+          <a :href="`/Dashboard_Company/${currentUserCompanyId}`" class="" v-if="isCompany"
+            >Dashboard C</a
+          >
+        </li>
 
-        <li class="dropdown">
+        <li class="dropdown" v-if="isAdmin">
           <a href="#">Administration ▾</a>
           <ul class="dropdown-content">
             <li><a href="/Dashboard_Admin" class="">Dashboard A</a></li>
@@ -77,11 +107,11 @@ onMounted(() => {
 
           <div class="user-dropdown">
             <input type="checkbox" id="user-toggle" hidden />
-            <label for="user-toggle" class="user-name">AHMED ▾</label>
+            <label for="user-toggle" class="user-name">{{ UserName }} ▾</label>
 
             <ul class="user-menu">
               <li><a href="/favoris">Favoris</a></li>
-              <li><a href="/Profil">Profil</a></li>
+              <li><a :href="`/Profil/${currentUserId}`">Profil</a></li>
               <li><a href="/Contact">Contact</a></li>
               <li><a @click="logout">Déconnexion</a></li>
             </ul>
@@ -100,7 +130,7 @@ onMounted(() => {
   </footer>
 </template>
 
-<style scoped>
+<style>
 .logo img {
   width: 250px;
 }

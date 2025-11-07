@@ -57,7 +57,7 @@ const router = createRouter({
       component: Accueil,
     },
     {
-      path: '/Home/apply',
+      path: '/Home/apply/:id',
       name: "Postuler à l'offre",
       component: Apply,
     },
@@ -72,7 +72,7 @@ const router = createRouter({
       component: Companys,
     },
     {
-      path: '/Companys/CompanyDetails',
+      path: '/Companys/CompanyDetails/:id',
       name: 'Détails de la société',
       component: CompanyDetails,
     },
@@ -82,7 +82,7 @@ const router = createRouter({
       component: OffersCompany,
     },
     {
-      path: '/myRequest',
+      path: '/myRequest/:id', // id de users
       name: 'Mes Demandes',
       component: myRequest,
     },
@@ -92,7 +92,7 @@ const router = createRouter({
       component: Request,
     },
     {
-      path: '/Dashboard_Company',
+      path: '/Dashboard_Company/:companyId',
       name: 'Tableau de Bord Société',
       component: DashboardCompany,
     },
@@ -107,7 +107,7 @@ const router = createRouter({
       component: Favoris,
     },
     {
-      path: '/Profil',
+      path: '/Profil/:id',
       name: 'Mon Profil',
       component: Profil,
     },
@@ -117,7 +117,7 @@ const router = createRouter({
       component: Contact,
     },
     {
-      path: '/myRequest/UpdateMyRequest',
+      path: '/myRequest/UpdateMyRequest/:id',
       name: 'Modif Demande',
       component: UpdateMyRequest,
     },

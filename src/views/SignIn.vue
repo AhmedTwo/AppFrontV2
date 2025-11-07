@@ -29,7 +29,7 @@ const loginUser = async () => {
     // 1. Stocke le token d'authentification reçu du serveur dans le stockage local (LocalStorage).
     // C'est ce token qui sera automatiquement ajouté aux futures requêtes par l'intercepteur !
     localStorage.setItem('auth_token', responses.data.token)
-    userStore.login(responses.data)
+    userStore.login(responses.data.user)
     // console.log(responses.data) // Affiche la réponse du serveur dans la console (pour débogage).
     router.push('/Home') // Redirige l'utilisateur vers la page '/Home'. suite de la connexion réussi.
   } catch (err) {

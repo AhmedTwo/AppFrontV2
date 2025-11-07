@@ -105,7 +105,7 @@ onMounted(() => {
       </div>
 
       <div class="card-footer" v-if="userStore.isAuthenticated">
-        <a href="/Home/apply" class="btn-apply">
+        <a :href="`/Home/apply/${offer.id}`" class="btn-apply">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"

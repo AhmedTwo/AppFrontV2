@@ -1,9 +1,46 @@
 <script setup>
 import ImagesUser from '../assets/images/userDefault.jpeg'
+
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+// on importe useRoute de vue-router pour accéder aux paramètres de l'URL
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const token = localStorage.getItem('auth_token')
+
+// on change le nom de la variable pour stocker un seul objet
+const user = ref(null)
+
+const readCompany = async () => {
+  const userId = route.params.id
+
+  if (!userId) {
+    console.error('ID de user non trouvé dans les paramètres de la route.')
+    return
+  }
+
+  try {
+    // on apl l'endpoint spécifique par ID (selon votre API Laravel)
+    const responses = await axios.get(`http://127.0.0.1:8000/api/userById/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    // on stock l'objet unique dans la variable 'user'
+    user.value = responses.data.data
+    console.log(user.value)
+  } catch (err) {
+    console.log('Erreur lors de la récupération des détails de user par ID :', err)
+  }
+}
+
+onMounted(readCompany)
 </script>
 
 <template>
-  <div class="page-background-profil">
+  <div class="page-background-profil" v-if="user">
     <div class="profil-container">
       <div class="photo-edit-zone">
         <img class="profil-photo" :src="ImagesUser" alt="Photo de profil" />
@@ -17,8 +54,8 @@ import ImagesUser from '../assets/images/userDefault.jpeg'
       </div>
 
       <div class="profil-info">
-        <h2 class="user-name">Seghiri Ahmed</h2>
-        <p class="user-qualification">Étudiant en Développement Web</p>
+        <h2 class="user-name">{{ user.nom }} {{ user.prenom }}</h2>
+        <p class="user-qualification">{{ user.qualification }}</p>
 
         <hr class="separator" />
 
@@ -31,9 +68,9 @@ import ImagesUser from '../assets/images/userDefault.jpeg'
               />
             </svg>
             <span>Email :</span>
-            <a href="mailto:seghiriahmed9@gmail.com" class="info-value email-link"
-              >seghiriahmed9@gmail.com</a
-            >
+            <a href="mailto:seghiriahmed9@gmail.com" class="info-value email-link">{{
+              user.email
+            }}</a>
           </p>
           <p class="info-item">
             <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -43,7 +80,7 @@ import ImagesUser from '../assets/images/userDefault.jpeg'
               />
             </svg>
             <span>Téléphone :</span>
-            <span class="info-value">06 12 34 56 78</span>
+            <span class="info-value">{{ user.telephone }}</span>
           </p>
           <p class="info-item">
             <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -53,7 +90,7 @@ import ImagesUser from '../assets/images/userDefault.jpeg'
               />
             </svg>
             <span>Ville :</span>
-            <span class="info-value">Paris (75000)</span>
+            <span class="info-value">{{ user.ville }} ({{ user.code_postal }})</span>
           </p>
         </div>
 
@@ -78,7 +115,7 @@ import ImagesUser from '../assets/images/userDefault.jpeg'
               />
             </svg>
             <span>Disponible :</span>
-            <span class="status-badge badge-unavailable">NON</span>
+            <span class="status-badge badge-unavailable">{{ user.disponibilite }}</span>
           </p>
           <p class="info-item status-display">
             <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -88,7 +125,7 @@ import ImagesUser from '../assets/images/userDefault.jpeg'
               />
             </svg>
             <span>Rôle :</span>
-            <span class="status-badge badge-admin">Admin</span>
+            <span class="status-badge badge-admin">{{ user.role }}</span>
           </p>
         </div>
       </div>

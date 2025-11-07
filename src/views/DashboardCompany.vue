@@ -1,24 +1,26 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
-// ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
+const route = useRoute()
+const companyId = route.params.companyId // récupère le paramètre si tu passes l'ID dans l'URL
+
 const offers = ref([])
 
-// console.log('Je suis dans la console')
-
-const readOffer = async () => {
-  // temps de chargement front plus rapide, avec la donnée qui arrive
+const readMyOffer = async () => {
+  const token = localStorage.getItem('auth_token')
   try {
-    const responses = await axios.get('http://127.0.0.1:8000/api/allOffer')
+    const responses = await axios.get('http://127.0.0.1:8000/api/myOffers', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     offers.value = responses.data.data
-    // console.log(offers.value)
   } catch (err) {
     console.log(err)
   }
 }
 
-onMounted(readOffer)
+onMounted(readMyOffer)
 </script>
 
 <template>
@@ -28,7 +30,7 @@ onMounted(readOffer)
   </div>
 
   <div class="offers-grid">
-    <div class="offer-card" v-for="offer in offers.slice(0, 2)" :key="offer.id">
+    <div class="offer-card" v-for="offer in offers" :key="offer.id">
       <div class="card-image">
         <img :src="offer.image_url" alt="Image offre" />
         <div class="image-overlay">
@@ -98,51 +100,8 @@ onMounted(readOffer)
       </div>
 
       <div class="card-footer">
-        <a href="/offers/UpdateOffer" class="btn btn-update">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293z"
-            />
-            <path
-              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 
-        0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 
-        0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 
-        1.5 0 0 0 1 2.5z"
-            />
-          </svg>
-          Modifier
-        </a>
-
+        <a href="/offers/UpdateOffer" class="btn btn-update">Modifier</a>
         <button type="button" class="btn btn-delete" title="Supprimer cette demande">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 
-        1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 
-        0 2-2V4h.5a1 1 0 0 0 1-1V2a1 
-        1 0 0 0-1-1H10a1 1 0 0 
-        0-1-1H7a1 1 0 0 0-1 1zm3 
-        4a.5.5 0 0 1 .5.5v7a.5.5 
-        0 0 1-1 0v-7a.5.5 0 
-        0 1 .5-.5M8 5a.5.5 0 
-        0 1 .5.5v7a.5.5 0 
-        0 1-1 0v-7A.5.5 0 
-        0 1 8 5m3 .5v7a.5.5 
-        0 0 1-1 0v-7a.5.5 
-        0 0 1 1 0"
-            />
-          </svg>
           Supprimer
         </button>
       </div>

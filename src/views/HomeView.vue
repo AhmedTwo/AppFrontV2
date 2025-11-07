@@ -2,8 +2,6 @@
 import { onMounted, ref } from 'vue'
 import ImagesLogo from '../assets/images/imagePortal.png'
 import axios from 'axios'
-// Assurez-vous d'importer le store si vous en avez un (commenté car non fourni dans le premier bloc)
-// import { useUserStore } from '@/stores/user'
 
 // ref est une syntaxe qui permet de dynamiser une variable pour l'afficher
 const nbUser = ref([])
@@ -11,11 +9,8 @@ const nbOffer = ref([])
 const nbCompany = ref([])
 const offers = ref([])
 
-// Le store utilisateur est nécessaire pour afficher/masquer le bouton "Postuler"
-// Décommentez les lignes suivantes si vous utilisez un store Pinia ou autre
-// const userStore = useUserStore()
 // const isAuthenticated = ref(false) // Simuler l'état pour l'exemple
-const isAuthenticated = ref(false) // Remplacer par la logique du store si utilisé
+const isAuthenticated = ref(false)
 
 // Logique pour compter (inchangée)
 const count = async () => {
@@ -41,11 +36,10 @@ const readOffer = async () => {
 }
 onMounted(readOffer)
 
-// Logique d'authentification (si vous utilisez un store)
+// Logique d'authentification
 onMounted(() => {
   if (localStorage.getItem('auth_token') !== null) {
-    // Si vous utilisez un store, faites : userStore.isAuthenticated = true
-    isAuthenticated.value = true // Pour l'exemple sans store complet
+    isAuthenticated.value = true
   }
 })
 </script>

@@ -1,19 +1,32 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
+// on importe useRoute de vue-router pour accéder aux paramètres de l'URL
+import { useRoute } from 'vue-router'
 
-// ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
-const companys = ref([])
+const route = useRoute()
 
-// console.log('Je suis dans la console')
+// on change le nom de la variable pour stocker un seul objet
+const companys = ref(null)
 
 const readCompany = async () => {
-  // temps de chargement front plus rapide, avec la donnée qui arrive
+  // Récupère l'ID depuis l'URL (ex: '15' si l'URL est .../CompanyDetails/15)
+  const companyId = route.params.id
+
+  if (!companyId) {
+    console.error("ID de l'entreprise non trouvé dans les paramètres de la route.")
+    return
+  }
+
   try {
-    const responses = await axios.get('http://127.0.0.1:8000/api/allCompany')
+    // on apl l'endpoint spécifique par ID (selon votre API Laravel)
+    const responses = await axios.get(`http://127.0.0.1:8000/api/companyById/${companyId}`)
+
+    // on stock l'objet unique dans la variable 'company'
     companys.value = responses.data.data
+    console.log(companys.value)
   } catch (err) {
-    console.log(err)
+    console.log("Erreur lors de la récupération des détails de l'entreprise par ID :", err)
   }
 }
 
@@ -27,11 +40,10 @@ onMounted(readCompany)
       <p class="subtitle">Informations complètes et détaillées</p>
     </div>
 
-    <div class="table-wrapper">
+    <div class="table-wrapper" v-if="companys">
       <table class="company-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nom</th>
             <th>Domaine</th>
             <th>Lieu</th>
@@ -45,14 +57,11 @@ onMounted(readCompany)
           </tr>
         </thead>
         <tbody>
-          <tr v-for="company in companys" :key="company.id">
-            <td data-label="ID">
-              <span class="badge badge-id">{{ company.id }}</span>
-            </td>
+          <tr>
             <td data-label="Nom">
-              <strong class="company-name">{{ company.name }}</strong>
+              <strong class="company-name">{{ companys.name }}</strong>
             </td>
-            <td data-label="Domaine">{{ company.industry }}</td>
+            <td data-label="Domaine">{{ companys.industry }}</td>
             <td data-label="Lieu">
               <div class="location">
                 <svg
@@ -65,19 +74,19 @@ onMounted(readCompany)
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                {{ company.address }}
+                {{ companys.address }}
               </div>
             </td>
             <td data-label="Employés">
-              <span class="badge badge-employees">{{ company.number_of_employees }}</span>
+              <span class="badge badge-employees">{{ companys.number_of_employees }}</span>
             </td>
-            <td data-label="Latitude">{{ company.latitude }}</td>
-            <td data-label="Longitude">{{ company.longitude }}</td>
+            <td data-label="Latitude">{{ companys.latitude }}</td>
+            <td data-label="Longitude">{{ companys.longitude }}</td>
             <td data-label="Description">
-              <div class="description">{{ company.description }}</div>
+              <div class="description">{{ companys.description }}</div>
             </td>
             <td data-label="N° Siret">
-              <code class="siret">{{ company.n_siret }}</code>
+              <code class="siret">{{ companys.n_siret }}</code>
             </td>
             <td data-label="Status">
               <span
@@ -85,28 +94,39 @@ onMounted(readCompany)
                   'badge',
                   'badge-status',
                   {
-                    'badge-active': company.status === 'Approuvée',
-                    'badge-pending': company.status === 'En_attente',
-                    'badge-inactive': company.status === 'Refusée',
+                    'badge-active': companys.status === 'Approuvée',
+                    'badge-pending': companys.status === 'En_attente',
+                    'badge-inactive': companys.status === 'Refusée',
                   },
                 ]"
               >
-                {{ company.status }}
+                {{ companys.status }}
               </span>
             </td>
             <td data-label="Logo" class="logo-cell">
               <a href="/offers/offerCompany" class="logo-link">
-                <img :src="company.logo" :alt="`Logo ${company.name}`" />
+                <img :src="companys.logo" :alt="`Logo ${companys.name}`" />
               </a>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <div v-else class="loading-message">
+      <p>Chargement des détails de la société...</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.loading-message {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #475569;
+}
+
 /* === Global layout === */
 .main {
   width: 90%;
