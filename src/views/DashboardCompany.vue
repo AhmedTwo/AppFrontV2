@@ -4,11 +4,10 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
-const companyId = route.params.companyId // récupère le paramètre si tu passes l'ID dans l'URL
 
 const offers = ref([])
 
-const readMyOffer = async () => {
+const addOffer = async () => {
   const token = localStorage.getItem('auth_token')
   try {
     const responses = await axios.get('http://127.0.0.1:8000/api/myOffers', {
@@ -20,7 +19,7 @@ const readMyOffer = async () => {
   }
 }
 
-onMounted(readMyOffer)
+onMounted(addOffer)
 </script>
 
 <template>
@@ -29,10 +28,30 @@ onMounted(readMyOffer)
     <p class="subtitle">Découvrez ici les offres de ta société !</p>
   </div>
 
+  <div class="action-bar">
+    <a href="/Dashboard_Company/AddOffers" class="btn-add">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
+        />
+        <path
+          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+        />
+      </svg>
+      Ajouter une offre
+    </a>
+  </div>
+
   <div class="offers-grid">
     <div class="offer-card" v-for="offer in offers" :key="offer.id">
       <div class="card-image">
-        <img :src="offer.image_url" alt="Image offre" />
+        <img :src="'http://127.0.0.1:8000' + offer.image_url" alt="Image offre" />
         <div class="image-overlay">
           <span class="badge badge-employment">{{ offer.employment_type.name }}</span>
           <span class="badge badge-category">{{ offer.category }}</span>
@@ -414,6 +433,41 @@ h1 {
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* Barre d'action */
+.action-bar {
+  max-width: 67%;
+  margin: 0 auto 30px;
+}
+
+.btn-add {
+  display: inline-flex;
+  gap: 8px;
+  padding: 12px 20px;
+  background: white;
+  color: #0066ff;
+  border: 2px solid #0066ff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.521);
+}
+
+.btn-add:hover {
+  background: #0066ff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+.btn-add svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-add:hover svg {
+  transform: rotate(90deg);
 }
 
 /* -------------------

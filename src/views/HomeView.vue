@@ -92,7 +92,7 @@ onMounted(() => {
     <div class="offers-grid">
       <div class="offer-card" v-for="offer in offers.slice(0, 3)" :key="offer.id">
         <div class="card-image">
-          <img :src="offer.image_url" alt="Image offre" />
+          <img :src="'http://127.0.0.1:8000' + offer.image_url" alt="Image offre" />
           <div class="image-overlay">
             <span class="badge badge-employment">{{
               offer.employment_type?.name || 'Type de Contrat'

@@ -12,6 +12,7 @@ import CompanyDetails from '../views/CompanyDetails.vue'
 import myRequest from '../views/MyRequest.vue'
 import Request from '../views/Request.vue'
 import DashboardCompany from '../views/DashboardCompany.vue'
+import AddOffers from '../views/AddOffers.vue'
 import DashboardAdmin from '../views/DashboardAdmin.vue'
 import Favoris from '../views/Favoris.vue'
 import Profil from '../views/Profil.vue'
@@ -95,6 +96,11 @@ const router = createRouter({
       path: '/Dashboard_Company/:companyId',
       name: 'Tableau de Bord Société',
       component: DashboardCompany,
+    },
+    {
+      path: '/Dashboard_Company/AddOffers',
+      name: "Ajout d'une offre",
+      component: AddOffers,
     },
     {
       path: '/Dashboard_Admin',

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 
@@ -26,6 +26,9 @@ onMounted(() => {
     userStore.isAuthenticated = true
   }
 })
+
+// Vérifier si l'utilisateur est une company
+const isCompany = computed(() => userStore.user?.role === 'company')
 </script>
 
 <template>
@@ -37,7 +40,7 @@ onMounted(() => {
   <div class="offers-grid">
     <div class="offer-card" v-for="offer in offers.slice(0, 3)" :key="offer.id">
       <div class="card-image">
-        <img :src="offer.image_url" alt="Image offre" />
+        <img :src="'http://127.0.0.1:8000' + offer.image_url" alt="Image offre" />
         <div class="image-overlay">
           <span class="badge badge-employment">{{ offer.employment_type.name }}</span>
           <span class="badge badge-category">{{ offer.category }}</span>
@@ -104,7 +107,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="card-footer" v-if="userStore.isAuthenticated">
+      <div class="card-footer" v-if="userStore.isAuthenticated && !isCompany">
         <a :href="`/Home/apply/${offer.id}`" class="btn-apply">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -123,6 +126,11 @@ onMounted(() => {
         <a href="favoris" class="btn-heart" style="margin: 2%">
           <span style="font-size: 35px">♡</span>
         </a>
+      </div>
+      <div class="card-footer" v-else-if="isCompany">
+        <span class="btn-apply"
+          >Les entreprises ne peuvent pas postuler ou ajouter aux favoris.</span
+        >
       </div>
       <div class="card-footer" v-else>
         <a href="/SignIn" class="btn-apply">Connectez-vous pour postuler</a>

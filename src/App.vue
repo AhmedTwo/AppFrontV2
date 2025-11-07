@@ -71,13 +71,8 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
       <ul class="menu" v-if="userStore.isAuthenticated">
         <li><a href="/home" class="">Accueil</a></li>
 
-        <li class="dropdown">
-          <a href="#">Nos services ▾</a>
-          <ul class="dropdown-content">
-            <li><a href="/offers" class="">Nos offres</a></li>
-            <li><a href="/Companys" class="">Nos sociétés</a></li>
-          </ul>
-        </li>
+        <li><a href="/offers" class="">Nos offres</a></li>
+        <li><a href="/Companys" class="">Nos sociétés</a></li>
 
         <li><a :href="`/myRequest/${currentUserId}`" class="">Mes demandes</a></li>
 

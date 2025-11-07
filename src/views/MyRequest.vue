@@ -75,7 +75,6 @@ onMounted(loadRequestData)
 
   <div class="action-bar">
     <a href="/myRequest/AddMyRequest" class="btn-add">
-      <!-- SVG ici... -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="18"

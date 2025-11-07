@@ -10,7 +10,12 @@ const requests = ref([])
 const readRequest = async () => {
   // temps de chargement front plus rapide, avec la donnée qui arrive
   try {
-    const responses = await axios.get('http://127.0.0.1:8000/api/allRequest')
+    const token = localStorage.getItem('auth_token')
+
+    const responses = await axios.get('http://127.0.0.1:8000/api/allRequest', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+
     requests.value = responses.data.data
     // console.log(requests.value)
   } catch (err) {
