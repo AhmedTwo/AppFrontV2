@@ -1,5 +1,62 @@
 <script setup>
 import ImagesPortal from '../assets/images/Portal.png'
+
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const loading = ref(false)
+const error = ref(null)
+const success = ref(false)
+
+const userData = ref({
+  nom: '',
+  prenom: '',
+  email: '',
+  password: '',
+  telephone: '',
+  ville: '',
+  code_postal: '',
+  qualification: '',
+  preference: [],
+  disponibilite: '',
+})
+
+//  fonction d'ajout (POST)
+const addUser = async () => {
+  const payload = {
+    nom: userData.value.nom,
+    prenom: userData.value.prenom,
+    email: userData.value.email,
+    password: userData.value.password,
+    telephone: userData.value.telephone,
+    ville: userData.value.ville,
+    code_postal: userData.value.code_postal,
+    qualification: userData.value.qualification,
+    preference: userData.value.preference.join(', '),
+    disponibilite: userData.value.disponibilite,
+  }
+
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/addUser', payload)
+
+    success.value = true
+    console.log('Utilisateur ajouté:', response.data)
+
+    // redirection après succès
+    setTimeout(() => {
+      router.push('/SignIn')
+    }, 1000)
+  } catch (err) {
+    console.error("Erreur lors de l'ajout de l'utilisateur :", err.response?.data || err)
+    //  erreur retournée par le serveur si elle existe
+    error.value = err.response?.data?.message || "Échec de l'ajout. Vérifiez les champs."
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -10,66 +67,86 @@ import ImagesPortal from '../assets/images/Portal.png'
         <img :src="ImagesPortal" alt="fond logo porte de portal job" width="35" />
       </h1>
 
-      <form id="addForm" method="POST" action="/inscription/addUser/" enctype="multipart/form-data">
+      <form id="addForm" @submit.prevent="addUser">
         <div class="divAdd">
           <label for="nom">Nom</label>
-          <input type="text" id="nom" name="inputNom" required />
+          <input type="text" id="nom" v-model="userData.nom" required />
         </div>
 
         <div class="divAdd">
           <label for="prenom">Prénom</label>
-          <input type="text" id="prenom" name="inputPrenom" required />
+          <input type="text" id="prenom" v-model="userData.prenom" required />
         </div>
 
         <div class="divAdd">
           <label for="email">Email</label>
-          <input type="email" id="email" name="inputEmail" required />
+          <input type="email" id="email" v-model="userData.email" required />
         </div>
 
         <div class="divAdd">
           <label for="password">Mot de passe</label>
-          <input type="password" id="password" name="inputPassword" required />
+          <input type="password" id="password" v-model="userData.password" required />
         </div>
 
         <div class="divAdd">
           <label for="telephone">Téléphone</label>
-          <input type="text" id="telephone" name="inputTelephone" required />
+          <input type="text" id="telephone" v-model="userData.telephone" required />
         </div>
 
         <div class="divAdd">
           <label for="ville">Ville</label>
-          <input type="text" id="ville" name="inputVille" required />
+          <input type="text" id="ville" v-model="userData.ville" required />
         </div>
 
         <div class="divAdd">
           <label for="zipcode">Code postal</label>
-          <input type="text" id="zipcode" name="inputZipcode" required />
+          <input type="text" id="zipcode" v-model="userData.code_postal" required />
         </div>
 
         <div class="divAdd">
           <label for="qualification">Qualification</label>
-          <input type="text" id="qualification" name="inputQualification" required />
+          <input type="text" id="qualification" v-model="userData.qualification" required />
         </div>
 
         <div class="divAdd">
-          <label for="preference">Préférences</label>
-          <input type="text" id="preference" name="inputPreference" required />
+          <label for="preference">Préférences (Choix multiples) :</label>
+
+          <div class="checkbox-group">
+            <label> <input type="checkbox" value="CDI" v-model="userData.preference" /> CDI </label>
+            <label> <input type="checkbox" value="CDD" v-model="userData.preference" /> CDD </label>
+            <label>
+              <input type="checkbox" value="STAGE" v-model="userData.preference" /> STAGE
+            </label>
+            <label>
+              <input type="checkbox" value="ALTERNANCE" v-model="userData.preference" /> ALTERNANCE
+            </label>
+            <label>
+              <input type="checkbox" value="FREELANCE" v-model="userData.preference" /> FREELANCE
+            </label>
+          </div>
         </div>
 
         <div class="divAdd radio-box">
           <p>Disponibilité immédiate :</p>
-          <label><input type="radio" name="choix" value="1" required /> Oui</label>
-          <label><input type="radio" name="choix" value="0" required /> Non</label>
+          <label
+            ><input type="radio" name="choix" value="1" required v-model="userData.disponibilite" />
+            Oui</label
+          >
+          <label
+            ><input type="radio" name="choix" value="0" required v-model="userData.disponibilite" />
+            Non</label
+          >
         </div>
 
-        <div class="divAdd">
-          <label for="photo">Photo de profil :</label>
-          <input type="file" id="photo" name="inputPhoto" accept=".jpg, .jpeg, .png" required />
-          <label for="cv">CV :</label>
-          <input type="file" id="cv" name="inputCv" accept=".pdf" required />
+        <div v-if="error" class="divAdd message error-message">❌ {{ error }}</div>
+        <div v-if="success" class="divAdd message success-message">
+          ✅ Utilisateur ajouté avec succès !
         </div>
 
-        <button type="submit" class="btn">S'INSCRIRE</button>
+        <button type="submit" class="btn" :disabled="loading">
+          <span v-if="loading">Ajout en cours...</span>
+          <span v-else>Ajouter l'utilisateur</span>
+        </button>
       </form>
     </div>
   </div>
@@ -209,25 +286,66 @@ import ImagesPortal from '../assets/images/Portal.png'
 }
 
 .radio-box p {
-  font-weight: 600;
+  font-weight: 00;
   margin: 0;
   color: #212529;
   font-size: 0.9rem;
 }
 
 .radio-box label {
-  font-weight: normal;
-  margin: 0;
   display: flex;
-  align-items: center;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .radio-box input[type='radio'] {
   width: 14px;
   height: 14px;
   margin-right: 4px;
+}
+
+/* ... (dans <style scoped>) */
+
+.checkbox-group {
+  /* Afficher les options en ligne ou en grille */
+  display: flex;
+  flex-wrap: wrap; /* Permet de passer à la ligne si l'écran est trop petit */
+  gap: 15px; /* Espacement entre les options */
+  margin-top: 5px;
+}
+
+.checkbox-group label {
+  /* Style pour chaque option (texte + case) */
+  font-weight: normal; /* Annuler le poids de 600 hérité de .divAdd label */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 0; /* Important pour le gap */
+  font-size: 0.9rem;
+}
+
+.checkbox-group input[type='checkbox'] {
+  /* Style pour la case elle-même */
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* -------------------
+   RESPONSIVE (Ajustements)
+   ------------------- */
+/* S'assurer que le divAdd des préférences est en pleine largeur si nécessaire */
+/* Vous n'avez normalement rien à changer dans la media query pour les .divAdd, 
+   mais assurez-vous que les cases à cocher se comportent bien sur mobile. */
+
+@media (max-width: 600px) {
+  .checkbox-group {
+    flex-direction: column; /* Empiler les cases à cocher sur les petits écrans */
+    gap: 8px;
+  }
 }
 
 /* -------------------

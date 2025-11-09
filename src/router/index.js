@@ -38,7 +38,7 @@ const router = createRouter({
       component: Connexion,
     },
     {
-      path: '/SignUp/addUser/',
+      path: '/SignUp/',
       name: 'inscription',
       component: Inscription,
     },

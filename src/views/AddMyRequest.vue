@@ -1,4 +1,59 @@
 <script setup>
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const loading = ref(false) // Indique que le processus (l'envoi de la demande) a commencé
+const error = ref(null) // Réinitialise l'état d'erreur
+const success = ref(false) // Réinitialise l'état de succès
+
+const requestData = ref({
+  title: '',
+  type: '',
+  description: '',
+})
+
+//  fonction d'ajout (POST)
+const addRequest = async () => {
+  const token = localStorage.getItem('auth_token')
+  if (!token) {
+    error.value = "Erreur d'authentification. Token manquant."
+    return
+  }
+
+  // Assurez-vous que les clés ci-dessous correspondent aux attentes de votre API
+  const payload = {
+    title: requestData.value.title,
+    type: requestData.value.type,
+    description: requestData.value.description,
+  }
+
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/addRequest', payload, {
+      // Le Payload est le corps de données que j'envoie (par exemple, le JSON de l'offre) au serveur pour qu'il puisse créer la ressource
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    success.value = true
+    console.log('Demande ajoutée:', response.data)
+
+    // redirection après succès
+    setTimeout(() => {
+      router.push('/MyRequest/')
+    }, 1000)
+  } catch (err) {
+    console.error("Erreur lors de l'ajout de la demande :", err.response?.data || err)
+    //  erreur retournée par le serveur si elle existe
+    error.value = err.response?.data?.message || "Échec de l'ajout. Vérifiez les champs."
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -9,21 +64,26 @@
       <p class="subtitle">Créez une nouvelle demande en remplissant les champs ci-dessous</p>
     </div>
 
-    <!-- Formulaire -->
-    <form id="requestForm" method="POST" action="/myRequest/addMyRequest" class="request-form">
+    <form id="requestForm" @submit.prevent="addRequest" class="request-form" novalidate>
       <div class="form-group">
         <label for="inputTitre">TITRE</label>
-        <input type="text" id="inputTitre" name="inputTitre" placeholder="Entrez le titre de la demande" required />
+        <input
+          type="text"
+          id="inputTitre"
+          v-model="requestData.title"
+          placeholder="Entrez le titre de la demande"
+          required
+        />
       </div>
 
       <div class="form-group">
         <label for="inputType">TYPE</label>
-        <select id="inputType" name="inputType" required>
+        <select id="inputType" v-model="requestData.type" required>
           <option value="">-- Sélectionnez un type --</option>
-          <option value="RECLAMATION">Réclamation</option>
-          <option value="DEMANDES">Demande d'informations</option>
-          <option value="SUPPRESSION">Suppression</option>
-          <option value="MODIFICATION">Modification</option>
+          <option value="RECLAMATION">RECLAMATION</option>
+          <option value="DEMANDES">DEMANDES D'INFORMATION</option>
+          <option value="SUPPRESSION">SUPPRESSION</option>
+          <option value="MODIFICATION">MODIFICATION</option>
         </select>
       </div>
 
@@ -31,15 +91,23 @@
         <label for="inputDescription">DESCRIPTION</label>
         <textarea
           id="inputDescription"
-          name="inputDescription"
+          v-model="requestData.description"
           rows="6"
           placeholder="Décrivez votre demande ici..."
           required
         ></textarea>
       </div>
 
+      <div v-if="error" class="divAdd message error-message">❌ {{ error }}</div>
+      <div v-if="success" class="divAdd message success-message">
+        ✅ Demande ajoutée avec succès !
+      </div>
+
       <div class="form-actions">
-        <button type="submit" class="btn-submit">AJOUTER</button>
+        <button type="submit" class="btn-submit" :disabled="loading">
+          <span v-if="loading">Ajout en cours...</span>
+          <span v-else>Ajouter la demande</span>
+        </button>
         <a href="/myRequest" class="btn-cancel">ANNULER</a>
       </div>
     </form>
@@ -101,7 +169,9 @@ textarea {
   border-radius: 8px;
   padding: 12px 14px;
   font-size: 1rem;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 input:focus,

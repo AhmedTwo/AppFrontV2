@@ -86,7 +86,7 @@ const loginUser = async () => {
         <p><a href="/SignIn/passwordForget">Mot de passe oublié ?</a></p>
 
         <div id="inscri_apply">
-          <p>Vous n'avez pas de compte ? <a href="/SignUp/addUser/">Inscription !</a></p>
+          <p>Vous n'avez pas de compte ? <a href="/SignUp/">Inscription !</a></p>
           <p>Vous êtes une Société ? <a href="/SignIn/AddCompany/">Rejoignez-nous !</a></p>
           <br />
         </div>

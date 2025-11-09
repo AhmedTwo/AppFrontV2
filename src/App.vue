@@ -62,9 +62,9 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
       </div>
 
       <ul class="menu" v-if="!userStore.isAuthenticated">
-        <li><a href="/home" class="" v-if="userStore.isAuthenticated">Accueil</a></li>
         <li><a href="/offers" class="">Nos offres</a></li>
         <li><a href="/Companys" class="">Nos sociétés</a></li>
+        <li><a href="/Request" class="">Les demandes</a></li>
         <li><a href="/Contact" class="">Contact</a></li>
       </ul>
 
@@ -75,6 +75,7 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
         <li><a href="/Companys" class="">Nos sociétés</a></li>
 
         <li><a :href="`/myRequest/${currentUserId}`" class="">Mes demandes</a></li>
+        <li><a href="/Request" class="" v-if="!isAdmin">Les demandes</a></li>
 
         <li>
           <a :href="`/Dashboard_Company/${currentUserCompanyId}`" class="" v-if="isCompany"
@@ -86,26 +87,26 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
           <a href="#">Administration ▾</a>
           <ul class="dropdown-content">
             <li><a href="/Dashboard_Admin" class="">Dashboard A</a></li>
-            <li><a href="/Request" class="">Demandes</a></li>
+            <li><a href="/Request" class="">Les demandes</a></li>
           </ul>
         </li>
       </ul>
 
       <div class="nav-right" v-if="!userStore.isAuthenticated">
         <a href="/SignIn"> <button class="sign_in">CONNEXION</button> </a>
-        <a href="/SignUp/addUser/"> <button class="sign_up">INSCRIPTION</button></a>
+        <a href="/SignUp/"> <button class="sign_up">INSCRIPTION</button></a>
       </div>
 
       <div class="nav-right" v-if="userStore.isAuthenticated">
         <div class="user-info">
-          <a href="/favoris" class="heart-link" title="Mes favoris">❤</a>
+          <a href="/favoris" class="heart-link" title="Mes favoris" v-if="!isCompany">❤</a>
 
           <div class="user-dropdown">
             <input type="checkbox" id="user-toggle" hidden />
             <label for="user-toggle" class="user-name">{{ UserName }} ▾</label>
 
             <ul class="user-menu">
-              <li><a href="/favoris">Favoris</a></li>
+              <li><a href="/favoris" v-if="!isCompany">Favoris</a></li>
               <li><a :href="`/Profil/${currentUserId}`">Profil</a></li>
               <li><a href="/Contact">Contact</a></li>
               <li><a @click="logout">Déconnexion</a></li>

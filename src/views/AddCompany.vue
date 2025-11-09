@@ -1,49 +1,146 @@
-<script setup></script>
+<script setup>
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const loading = ref(false)
+const error = ref(null)
+const success = ref(false)
+
+const companyData = ref({
+  name: '',
+  number_of_employees: '',
+  industry: '',
+  address: '',
+  latitude: '',
+  longitude: '',
+  description: '',
+  email_company: '',
+  n_siret: '',
+  logo: '',
+})
+
+const userData = ref({
+  nom: '',
+  prenom: '',
+  telephone: '',
+  ville: '',
+  code_postal: '',
+  // company_id sera rempli dynamiquement après la création de la société
+})
+
+// FONCTION DE SOUMISSION UNIQUE (Combinant Société + Utilisateur)
+
+const submitForm = async () => {
+  loading.value = true
+  error.value = null
+  success.value = false
+
+  try {
+    // AJOUT DE LA SOCIÉTÉ (AddCompany)
+    console.log('Étape 1 : Envoi des données de la société...')
+
+    const companyPayload = {
+      name: companyData.value.name,
+      number_of_employees: companyData.value.number_of_employees,
+      industry: companyData.value.industry,
+      address: companyData.value.address,
+      latitude: companyData.value.latitude,
+      longitude: companyData.value.longitude,
+      description: companyData.value.description,
+      email_company: companyData.value.email_company,
+      n_siret: companyData.value.n_siret,
+      logo: companyData.value.logo,
+    }
+
+    const companyResponse = await axios.post('http://127.0.0.1:8000/api/addCompany', companyPayload)
+
+    console.log('Société ajoutée (Réponse API) :', companyResponse.data)
+
+    const newCompanyId = companyResponse.data.id
+
+    if (!newCompanyId) {
+      throw new Error("L'API n'a pas retourné l'ID de la société créée.")
+    }
+
+    console.log(`ID de la société récupéré : ${newCompanyId}.`)
+
+    // AJOUT DE L'UTILISATEUR (AddUser)
+    console.log("Étape 2 : Envoi des données de l'utilisateur (avec Company ID)...")
+
+    const userPayload = {
+      nom: userData.value.nom,
+      prenom: userData.value.prenom,
+      telephone: userData.value.telephone,
+      ville: userData.value.ville,
+      code_postal: userData.value.code_postal,
+      company_id: newCompanyId, // LIAISON CRUCIALE
+    }
+
+    const userResponse = await axios.post('http://127.0.0.1:8000/api/addUser', userPayload)
+
+    console.log('Utilisateur ajoutée (Réponse API) :', userResponse.data)
+
+    // SUCCÈS
+    success.value = true
+    setTimeout(() => {
+      router.push('/SignIn')
+    }, 1000)
+  } catch (err) {
+    // GESTION DES ERREURS
+    console.error("Erreur lors de l'ajout (Société ou Utilisateur) :", err.response?.data || err)
+    error.value =
+      err.response?.data?.message || "Échec de l'ajout. Vérifiez le formulaire et l'API."
+  } finally {
+    loading.value = false
+  }
+}
+</script>
 
 <template>
   <div id="containerFirst">
     <div id="containerSecond">
       <h1 class="h1AddCompany">AJOUT D'UNE NOUVELLE SOCIÉTÉ !</h1>
 
-      <!-- Utiliser une URL absolue avec un / au début
-    garantit que le POST sera envoyé à la bonne route, et donc que ce bloc sera bien déclenché  -->
-      <form
-        id="addCompanyForm"
-        method="POST"
-        action="/connexion/applyCompany"
-        onsubmit="return validerSiret()"
-      >
+      <form id="addCompanyForm" @submit.prevent="submitForm" onsubmit="return validerSiret()">
         <div class="divAdd">
           <label for="inputNom">NOM DE LA SOCIÉTÉ</label>
-          <input type="text" id="inputNom" name="inputNom" required />
+          <input type="text" id="inputNom" v-model="companyData.name" required />
         </div>
         <div class="divAdd">
           <label for="inputNbEmploye">NOMBRE EMPLOYEES</label>
-          <input type="text" id="inputNbEmploye" name="inputNbEmploye" required />
+          <input
+            type="text"
+            id="inputNbEmploye"
+            v-model="companyData.number_of_employees"
+            required
+          />
         </div>
         <div class="divAdd">
           <label for="inputDomaine">DOMAINE</label>
-          <input type="text" id="inputDomaine" name="inputDomaine" required />
+          <input type="text" id="inputDomaine" v-model="companyData.industry" required />
         </div>
         <div class="divAdd">
-          <label for="inputAdresse">ADRESSE POSTALE</label>
-          <input type="text" id="inputAdresse" name="inputAdresse" required />
+          <label for="inputAdresse">ADRESSE POSTALE SOCIETE</label>
+          <input type="text" id="inputAdresse" v-model="companyData.address" required />
         </div>
         <div class="divAdd">
           <label for="inputLatitutde">LATITUDE</label>
-          <input type="text" id="inputLatitutde" name="inputLatitutde" required />
+          <input type="text" id="inputLatitutde" v-model="companyData.latitude" required />
         </div>
         <div class="divAdd">
           <label for="inputLongitude">LONGITUDE</label>
-          <input type="text" id="inputLongitude" name="inputLongitude" required />
+          <input type="text" id="inputLongitude" v-model="companyData.longitude" required />
         </div>
         <div class="divAdd">
           <label for="inputDescription">DESCRIPTIF</label>
-          <input type="text" id="inputDescription" name="inputDescription" required />
+          <input type="text" id="inputDescription" v-model="companyData.description" required />
         </div>
         <div class="divAdd">
           <label for="inputEmail">EMAIL</label>
-          <input type="email" id="inputEmail" name="inputEmail" required />
+          <input type="email" id="inputEmail" v-model="companyData.email_company" required />
         </div>
         <div class="divAdd">
           <!-- inputmode="numeric" → pavé numérique sur smartphone
@@ -53,7 +150,7 @@
           <input
             type="text"
             id="inputSiret"
-            name="inputSiret"
+            v-model="companyData.n_siret"
             inputmode="numeric"
             pattern="\d{14}"
             maxlength="14"
@@ -68,32 +165,32 @@
 
         <div class="divAdd">
           <label for="inputLogo">NOM</label>
-          <input type="text" id="inputFirstName" name="inputFirstName" required />
+          <input type="text" id="inputFirstName" v-model="userData.nom" required />
         </div>
 
         <div class="divAdd">
           <label for="inputLogo">PRENOM</label>
-          <input type="text" id="inputLastName" name="inputLastName" required />
+          <input type="text" id="inputLastName" v-model="userData.prenom" required />
         </div>
 
         <div class="divAdd">
           <label for="telephone">TELEPHONE</label>
-          <input type="text" id="telephone" name="inputTelephone" required />
+          <input type="text" id="telephone" v-model="userData.telephone" required />
         </div>
 
         <div class="divAdd">
           <label for="ville">VILLE</label>
-          <input type="text" id="ville" name="inputVille" required />
+          <input type="text" id="ville" v-model="userData.ville" required />
         </div>
 
         <div class="divAdd">
           <label for="zipcode">CODE POSTAL</label>
-          <input type="text" id="zipcode" name="inputZipcode" required />
+          <input type="text" id="zipcode" v-model="userData.code_postal" required />
         </div>
 
-        <div class="divAdd">
-          <label for="photo">PHOTO DE PROFIL :</label>
-          <input type="file" id="photo" name="inputPhoto" accept=".pdf, .jpg, .png" required />
+        <div v-if="error" class="divAdd message error-message">❌ {{ error }}</div>
+        <div v-if="success" class="divAdd message success-message">
+          ✅ Utilisateur et Société ajouté avec succès !
         </div>
 
         <button
@@ -101,8 +198,10 @@
           class="btn"
           onclick="return confirm('Es-tu sûr de vouloir envoyer cette société à Admin ?')"
           title="Envoyer"
+          :disabled="loading"
         >
-          ENVOYER
+          <span v-if="loading">Ajout en cours...</span>
+          <span v-else>Envoyer</span>
         </button>
       </form>
     </div>

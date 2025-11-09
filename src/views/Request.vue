@@ -1,11 +1,11 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 
 // ref est une syntaxe qui permet de dynamiser une variable pour l'afficher dans le html
 const requests = ref([])
-
-// console.log('Je suis dans la console')
+const userStore = useUserStore()
 
 const readRequest = async () => {
   // temps de chargement front plus rapide, avec la donnée qui arrive
@@ -24,12 +24,28 @@ const readRequest = async () => {
 }
 
 onMounted(readRequest)
+
+// Vérifier si l'utilisateur est admin
+const isAdmin = computed(() => userStore.user?.role === 'admin')
+
+const nbRequest = ref([])
+
+// Logique pour compter (inchangée)
+const count = async () => {
+  try {
+    const responses = await axios.get('http://127.0.0.1:8000/api/count')
+    nbRequest.value = responses.data.Request
+  } catch (err) {
+    console.log(err)
+  }
+}
+onMounted(count)
 </script>
 
 <template>
   <div>
     <div class="header-section">
-      <h1>TOUTES LES DEMANDES</h1>
+      <h1>TOUTES LES DEMANDES ({{ nbRequest }})</h1>
       <p class="subtitle">Gérez et modifiez l'ensemble des demandes soumises.</p>
     </div>
 
@@ -58,7 +74,7 @@ onMounted(readRequest)
           </div>
         </div>
 
-        <div class="card-footer card-actions">
+        <div class="card-footer card-actions" v-if="isAdmin">
           <button type="button" class="btn-delete" title="Supprimer cette demande">
             <svg
               xmlns="http://www.w3.org/2000/svg"
