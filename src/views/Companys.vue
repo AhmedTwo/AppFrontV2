@@ -28,7 +28,10 @@ onMounted(readCompany)
       <div class="card-header">
         <div class="logo-container">
           <a href="offers/offerCompany">
-            <img :src="company.logo" :alt="`Logo ${company.name}`" />
+            <img
+              :src="'http://127.0.0.1:8000/storage/' + company.logo"
+              :alt="`Logo ${company.name}`"
+            />
           </a>
         </div>
       </div>

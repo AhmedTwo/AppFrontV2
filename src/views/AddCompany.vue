@@ -19,7 +19,7 @@ const companyData = ref({
   description: '',
   email_company: '',
   n_siret: '',
-  logo: '',
+  logo: null,
 })
 
 const userData = ref({
@@ -28,12 +28,29 @@ const userData = ref({
   telephone: '',
   ville: '',
   code_postal: '',
+  photo: null,
   // company_id sera rempli dynamiquement après la création de la société
 })
 
-// FONCTION DE SOUMISSION UNIQUE (Combinant Société + Utilisateur)
+const handlePhotoUpload = (event) => {
+  const file = event.target.files ? event.target.files[0] : null
+  userData.value.photo = file
+}
 
+const handleLogoUpload = (event) => {
+  const file = event.target.files ? event.target.files[0] : null
+  companyData.value.logo = file
+}
+
+// FONCTION DE SOUMISSION (Société + Utilisateur)
 const submitForm = async () => {
+  // DÉBUT DE LA VALIDATION SIRET PERSONNALISÉE
+  if (companyData.value.n_siret.length !== 14) {
+    error.value = 'Le numéro SIRET doit contenir exactement 14 chiffres.'
+    return // Arrête l'envoi
+  }
+  // FIN DE LA VALIDATION SIRET
+
   loading.value = true
   error.value = null
   success.value = false
@@ -42,24 +59,33 @@ const submitForm = async () => {
     // AJOUT DE LA SOCIÉTÉ (AddCompany)
     console.log('Étape 1 : Envoi des données de la société...')
 
-    const companyPayload = {
-      name: companyData.value.name,
-      number_of_employees: companyData.value.number_of_employees,
-      industry: companyData.value.industry,
-      address: companyData.value.address,
-      latitude: companyData.value.latitude,
-      longitude: companyData.value.longitude,
-      description: companyData.value.description,
-      email_company: companyData.value.email_company,
-      n_siret: companyData.value.n_siret,
-      logo: companyData.value.logo,
+    const companyFormData = new FormData()
+
+    companyFormData.append('name', companyData.value.name)
+    companyFormData.append('number_of_employees', companyData.value.number_of_employees)
+    companyFormData.append('industry', companyData.value.industry)
+    companyFormData.append('address', companyData.value.address)
+    companyFormData.append('latitude', companyData.value.latitude)
+    companyFormData.append('longitude', companyData.value.longitude)
+    companyFormData.append('description', companyData.value.description)
+    companyFormData.append('email_company', companyData.value.email_company)
+    companyFormData.append('n_siret', companyData.value.n_siret)
+
+    // Ajout du fichier logo s'il existe
+    if (companyData.value.logo) {
+      companyFormData.append('logo', companyData.value.logo)
+    } else {
+      companyFormData.append('logo', '')
     }
 
-    const companyResponse = await axios.post('http://127.0.0.1:8000/api/addCompany', companyPayload)
+    const companyResponse = await axios.post(
+      'http://127.0.0.1:8000/api/addCompany',
+      companyFormData,
+    )
 
     console.log('Société ajoutée (Réponse API) :', companyResponse.data)
 
-    const newCompanyId = companyResponse.data.id
+    const newCompanyId = companyResponse.data.data.id
 
     if (!newCompanyId) {
       throw new Error("L'API n'a pas retourné l'ID de la société créée.")
@@ -67,32 +93,43 @@ const submitForm = async () => {
 
     console.log(`ID de la société récupéré : ${newCompanyId}.`)
 
-    // AJOUT DE L'UTILISATEUR (AddUser)
+    // AJOUT DE L'UTILISATEUR
     console.log("Étape 2 : Envoi des données de l'utilisateur (avec Company ID)...")
 
-    const userPayload = {
-      nom: userData.value.nom,
-      prenom: userData.value.prenom,
-      telephone: userData.value.telephone,
-      ville: userData.value.ville,
-      code_postal: userData.value.code_postal,
-      company_id: newCompanyId, // LIAISON CRUCIALE
+    // Génération des champs automatiques
+    const slugName = companyData.value.name.toLowerCase().replace(/\s/g, '-')
+    const autoEmail = `${slugName}@company.com`
+    const autoPassword = 'password'
+
+    const userFormData = new FormData()
+
+    userFormData.append('nom', userData.value.nom)
+    userFormData.append('prenom', userData.value.prenom)
+    userFormData.append('telephone', userData.value.telephone)
+    userFormData.append('ville', userData.value.ville)
+    userFormData.append('code_postal', userData.value.code_postal)
+    userFormData.append('company_id', newCompanyId) // Liaison
+
+    // Champs automatiques
+    userFormData.append('email', autoEmail)
+    userFormData.append('password', autoPassword)
+    userFormData.append('disponibilite', 0) // 0 ou 1 si le champ est 'boolean'
+
+    // Ajout du fichier photo s'il existe
+    if (userData.value.photo) {
+      userFormData.append('photo', userData.value.photo)
     }
 
-    const userResponse = await axios.post('http://127.0.0.1:8000/api/addUser', userPayload)
+    const userResponse = await axios.post('http://127.0.0.1:8000/api/addUser', userFormData)
 
-    console.log('Utilisateur ajoutée (Réponse API) :', userResponse.data)
+    console.log('Utilisateur ajoutée (Réponse API) :', userResponse.data) // SUCCÈS
 
-    // SUCCÈS
     success.value = true
     setTimeout(() => {
       router.push('/SignIn')
     }, 1000)
   } catch (err) {
-    // GESTION DES ERREURS
-    console.error("Erreur lors de l'ajout (Société ou Utilisateur) :", err.response?.data || err)
-    error.value =
-      err.response?.data?.message || "Échec de l'ajout. Vérifiez le formulaire et l'API."
+    // ... (gestion des erreurs) ...
   } finally {
     loading.value = false
   }
@@ -104,13 +141,14 @@ const submitForm = async () => {
     <div id="containerSecond">
       <h1 class="h1AddCompany">AJOUT D'UNE NOUVELLE SOCIÉTÉ !</h1>
 
-      <form id="addCompanyForm" @submit.prevent="submitForm" onsubmit="return validerSiret()">
+      <form id="addCompanyForm" @submit.prevent="submitForm">
         <div class="divAdd">
-          <label for="inputNom">NOM DE LA SOCIÉTÉ</label>
+          <label for="inputNom">NOM (SOCIÉTÉ)</label>
           <input type="text" id="inputNom" v-model="companyData.name" required />
         </div>
+
         <div class="divAdd">
-          <label for="inputNbEmploye">NOMBRE EMPLOYEES</label>
+          <label for="inputNbEmploye">NOMBRE EMPLOYEES (SOCIÉTÉ)</label>
           <input
             type="text"
             id="inputNbEmploye"
@@ -118,35 +156,39 @@ const submitForm = async () => {
             required
           />
         </div>
+
         <div class="divAdd">
-          <label for="inputDomaine">DOMAINE</label>
+          <label for="inputDomaine">DOMAINE (SOCIÉTÉ)</label>
           <input type="text" id="inputDomaine" v-model="companyData.industry" required />
         </div>
+
         <div class="divAdd">
-          <label for="inputAdresse">ADRESSE POSTALE SOCIETE</label>
+          <label for="inputAdresse">ADRESSE POSTALE SOCIETE (SOCIÉTÉ)</label>
           <input type="text" id="inputAdresse" v-model="companyData.address" required />
         </div>
+
         <div class="divAdd">
-          <label for="inputLatitutde">LATITUDE</label>
+          <label for="inputLatitutde">LATITUDE (SOCIÉTÉ)</label>
           <input type="text" id="inputLatitutde" v-model="companyData.latitude" required />
         </div>
+
         <div class="divAdd">
-          <label for="inputLongitude">LONGITUDE</label>
+          <label for="inputLongitude">LONGITUDE (SOCIÉTÉ)</label>
           <input type="text" id="inputLongitude" v-model="companyData.longitude" required />
         </div>
+
         <div class="divAdd">
-          <label for="inputDescription">DESCRIPTIF</label>
+          <label for="inputDescription">DESCRIPTIF (SOCIÉTÉ)</label>
           <input type="text" id="inputDescription" v-model="companyData.description" required />
         </div>
+
         <div class="divAdd">
-          <label for="inputEmail">EMAIL</label>
+          <label for="inputEmail">EMAIL (SOCIÉTÉ)</label>
           <input type="email" id="inputEmail" v-model="companyData.email_company" required />
         </div>
+
         <div class="divAdd">
-          <!-- inputmode="numeric" → pavé numérique sur smartphone
-                 pattern="\d{14}" → exactement 14 chiffres
-                 maxlength="14" → limite de saisie -->
-          <label for="inputSiret">N_SIRET</label>
+          <label for="inputSiret">N_SIRET (SOCIÉTÉ)</label>
           <input
             type="text"
             id="inputSiret"
@@ -159,33 +201,38 @@ const submitForm = async () => {
         </div>
 
         <div class="divAdd">
-          <label for="inputLogo">LIEN DU LOGO</label>
-          <input type="text" id="inputLogo" name="inputLogo" required />
+          <label for="inputLogo">LOGO (SOCIÉTÉ)</label>
+          <input type="file" id="inputLogo" accept="image/*" @change="handleLogoUpload" />
         </div>
 
         <div class="divAdd">
-          <label for="inputLogo">NOM</label>
+          <label for="inputLogo">NOM (UTILISATEUR)</label>
           <input type="text" id="inputFirstName" v-model="userData.nom" required />
         </div>
 
         <div class="divAdd">
-          <label for="inputLogo">PRENOM</label>
+          <label for="inputLogo">PRENOM (UTILISATEUR)</label>
           <input type="text" id="inputLastName" v-model="userData.prenom" required />
         </div>
 
         <div class="divAdd">
-          <label for="telephone">TELEPHONE</label>
+          <label for="telephone">TELEPHONE (UTILISATEUR)</label>
           <input type="text" id="telephone" v-model="userData.telephone" required />
         </div>
 
         <div class="divAdd">
-          <label for="ville">VILLE</label>
+          <label for="ville">VILLE (UTILISATEUR)</label>
           <input type="text" id="ville" v-model="userData.ville" required />
         </div>
 
         <div class="divAdd">
-          <label for="zipcode">CODE POSTAL</label>
+          <label for="zipcode">CODE POSTAL (UTILISATEUR)</label>
           <input type="text" id="zipcode" v-model="userData.code_postal" required />
+        </div>
+
+        <div class="divAdd">
+          <label for="photo">Photo (UTILISATEUR)</label>
+          <input type="file" id="photo" accept="image/*" @change="handlePhotoUpload" />
         </div>
 
         <div v-if="error" class="divAdd message error-message">❌ {{ error }}</div>

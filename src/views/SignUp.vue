@@ -22,25 +22,62 @@ const userData = ref({
   qualification: '',
   preference: [],
   disponibilite: '',
+  photo: null,
+  cv_pdf: null,
 })
+
+const handlePhotoUpload = (event) => {
+  // On vérifie d'abord si des fichiers ont été sélectionnés ('event.target.files' existe).
+  // Si oui, on prend le premier fichier de la liste : [0].
+  // Si non (par exemple, si l'utilisateur annule), on assigne 'null'.
+  const file = event.target.files ? event.target.files[0] : null
+  // On assigne le fichier récupéré à la propriété 'photo'
+  userData.value.photo = file
+  // console.log("Fichier stocké :", userData.value.photo)
+}
+
+const handleCVUpload = (event) => {
+  const file = event.target.files ? event.target.files[0] : null
+  // On assigne le fichier récupéré à la propriété 'photo'
+  userData.value.cv_pdf = file
+}
 
 //  fonction d'ajout (POST)
 const addUser = async () => {
-  const payload = {
-    nom: userData.value.nom,
-    prenom: userData.value.prenom,
-    email: userData.value.email,
-    password: userData.value.password,
-    telephone: userData.value.telephone,
-    ville: userData.value.ville,
-    code_postal: userData.value.code_postal,
-    qualification: userData.value.qualification,
-    preference: userData.value.preference.join(', '),
-    disponibilite: userData.value.disponibilite,
+  loading.value = true
+  error.value = null
+
+  // CRÉATION DE FORMDATA pour envoyer du texte ET le fichier
+  const formData = new FormData()
+
+  formData.append('nom', userData.value.nom)
+  formData.append('prenom', userData.value.prenom)
+  formData.append('email', userData.value.email)
+  formData.append('password', userData.value.password)
+  formData.append('telephone', userData.value.telephone)
+  formData.append('ville', userData.value.ville)
+  formData.append('code_postal', userData.value.code_postal)
+  formData.append('qualification', userData.value.qualification)
+
+  // Les préférences sont jointes en chaîne de caractères
+  formData.append('preference', userData.value.preference.join(', '))
+
+  formData.append('disponibilite', userData.value.disponibilite)
+
+  // Ajout du fichier photo s'il existe
+  if (userData.value.photo) {
+    // Le nom 'photo' doit correspondre à ce que votre API backend attend
+    formData.append('photo', userData.value.photo)
+  }
+
+  // Ajout du fichier cv s'il existe
+  if (userData.value.cv_pdf) {
+    // Le nom 'cv_pdf' doit correspondre à ce que votre API backend attend
+    formData.append('cv_pdf', userData.value.cv_pdf)
   }
 
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/addUser', payload)
+    const response = await axios.post('http://127.0.0.1:8000/api/addUser', formData, {})
 
     success.value = true
     console.log('Utilisateur ajouté:', response.data)
@@ -51,7 +88,7 @@ const addUser = async () => {
     }, 1000)
   } catch (err) {
     console.error("Erreur lors de l'ajout de l'utilisateur :", err.response?.data || err)
-    //  erreur retournée par le serveur si elle existe
+    // erreur retournée par le serveur si elle existe
     error.value = err.response?.data?.message || "Échec de l'ajout. Vérifiez les champs."
   } finally {
     loading.value = false
@@ -136,6 +173,16 @@ const addUser = async () => {
             ><input type="radio" name="choix" value="0" required v-model="userData.disponibilite" />
             Non</label
           >
+        </div>
+
+        <div class="divAdd">
+          <label for="photo">Photo de profil</label>
+          <input type="file" id="photo" accept="image/*" @change="handlePhotoUpload" />
+        </div>
+
+        <div class="divAdd">
+          <label for="cv_pdf">CV (PDF)</label>
+          <input type="file" id="cv_pdf" accept="application/pdf" @change="handleCVUpload" />
         </div>
 
         <div v-if="error" class="divAdd message error-message">❌ {{ error }}</div>
