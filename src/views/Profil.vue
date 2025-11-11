@@ -44,7 +44,11 @@ onMounted(readCompany)
     <div class="profil-container">
       <div class="photo-edit-zone">
         <img class="profil-photo" :src="ImagesUser" alt="Photo de profil" />
-        <a href="/Profil/UpdateProfil" class="btn-edit-float" title="Modifier le profil">
+        <a
+          :href="`/Profil/UpdateProfil/${user.id}`"
+          class="btn-edit-float"
+          title="Modifier le profil"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path
               d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-2.67 0-8 1.34-8 4v2h8.5l1.5-1.5V14zM20.7 14.35l-1.05-1.05c-.2-.2-.51-.2-.71 0l-4.34 4.34V20h2.36l4.34-4.34c.19-.2.19-.51 0-.71z"

@@ -7,10 +7,12 @@ import axios from 'axios'
 const requests = ref([])
 const userStore = useUserStore()
 
+//  on recup le token d'authentification depuis le localStorage
+const token = localStorage.getItem('auth_token')
+
 const readRequest = async () => {
   // temps de chargement front plus rapide, avec la donnée qui arrive
   try {
-    const token = localStorage.getItem('auth_token')
 
     const responses = await axios.get('http://127.0.0.1:8000/api/allRequest', {
       headers: { Authorization: `Bearer ${token}` },
@@ -39,6 +41,28 @@ const count = async () => {
     console.log(err)
   }
 }
+
+// Fonction de suppression (appel de l'API DELETE)
+const deleteRequest = async (requestId) => {
+  // on remplace l'alert() par une confirmation modale si possible, ici on simule.
+  if (confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/deleteRequest/${requestId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      // Retirer la demande du tableau local sans recharger toute la page
+      requests.value = requests.value.filter((req) => req.id !== requestId)
+      console.log(`Demande ID ${requestId} supprimée.`)
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la demande:', err)
+      prompt('Erreur lors de la suppression. Veuillez réessayer.')
+    }
+  }
+}
+
 onMounted(count)
 </script>
 
@@ -75,7 +99,12 @@ onMounted(count)
         </div>
 
         <div class="card-footer card-actions" v-if="isAdmin">
-          <button type="button" class="btn-delete" title="Supprimer cette demande">
+          <button
+            type="button"
+            class="btn-delete"
+            title="Supprimer cette demande"
+            @click="deleteRequest(request.id)"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -167,18 +196,20 @@ h1 {
 }
 
 .user-avatar {
-  width: 70px; /* Ajusté par rapport à l'exemple 1 */
-  height: 70px; /* Ajusté par rapport à l'exemple 1 */
-  border-radius: 50%; /* Rondi pour l'avatar (était 30% dans l'exemple 1) */
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.685);
-  overflow: hidden; /* Important pour le cercle */
+  width: 105px;
+  height: 105px;
+  border: 3px solid black;
+  border-radius: 50%;
+  overflow: hidden; /* IMPORTANT : coupe l’image qui dépasse */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* remplit le cercle sans déformer */
 }
 
 .user-info {

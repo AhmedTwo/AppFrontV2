@@ -1,61 +1,140 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const profilId = route.params.id
+const isLoading = ref(true)
+
+const profil = ref({
+  nom: '',
+  prenom: '',
+  email: '',
+  telephone: '',
+  ville: '',
+  code_postal: '',
+  qualification: '',
+  disponibilite: '',
+})
+
+const loadProfil = async () => {
+  const token = localStorage.getItem('auth_token')
+
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/userById/${profilId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    // Détecte automatiquement si les données sont dans "data" ou pas
+    const data = response.data.data ? response.data.data : response.data
+
+    profil.value.nom = data.nom
+    profil.value.prenom = data.prenom
+    profil.value.email = data.email
+    profil.value.telephone = data.telephone
+    profil.value.ville = data.ville
+    profil.value.code_postal = data.code_postal
+    profil.value.qualification = data.qualification
+    profil.value.disponibilite = !!data.disponibilite // convertit 0/1 ou true/false en boolean
+
+    console.log(data)
+    console.log(profil)
+  } catch (error) {
+    console.error('Erreur lors du chargement du Profil :', error)
+    alert('Impossible de charger le profil à modifier.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Màj de la demande
+const updateProfil = async () => {
+  const token = localStorage.getItem('auth_token')
+
+  try {
+    await axios.post(
+      `http://127.0.0.1:8000/api/userUpdate/${profilId}`,
+      {
+        nom: profil.value.nom,
+        prenom: profil.value.prenom,
+        email: profil.value.email,
+        telephone: profil.value.telephone,
+        ville: profil.value.ville,
+        code_postal: profil.value.code_postal,
+        qualification: profil.value.qualification,
+        disponibilite: profil.value.disponibilite,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    alert('✅ Profil mis à jour avec succès')
+    router.push('/Profil')
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour :', error)
+    alert('❌ Erreur lors de la mise à jour du Profil.')
+  }
+}
+
+onMounted(loadProfil)
+</script>
 
 <template>
   <div class="page-background">
     <div class="update-profil-container">
       <h2 class="form-header">Modifier mon Profil</h2>
 
-      <form class="profil-form">
-        <div class="photo-upload-section">
-          <input type="file" id="photoInput" accept="image/jpeg, image/png" style="display: none" />
+      <div v-if="isLoading" style="text-align: center; padding: 40px">Chargement...</div>
 
-          <button
-            type="button"
-            onclick="document.getElementById('photoInput').click()"
-            class="btn-change-photo"
-          >
-            Changer la photo
-          </button>
-        </div>
-
+      <form v-else class="profil-form" @submit.prevent="updateProfil">
         <hr class="separator" />
 
         <div class="form-group">
-          <label for="prenomNom">Nom & Prénom</label>
-          <input id="prenomNom" type="text" value="Seghiri Ahmed" required />
+          <label for="Nom">Nom </label>
+          <input id="Nom" type="text" v-model="profil.nom" required />
+        </div>
+
+        <div class="form-group">
+          <label for="prenom">Nom </label>
+          <input id="preno" type="text" v-model="profil.prenom" required />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input id="email" type="email" value="seghiriahmed9@gmail.com" required />
+          <input id="email" type="email" v-model="profil.email" required />
         </div>
 
         <div class="form-group">
           <label for="telephone">Téléphone</label>
-          <input id="telephone" type="tel" value="06 12 34 56 78" />
+          <input id="telephone" type="tel" v-model="profil.telephone" />
         </div>
 
         <div class="form-group">
           <label for="ville">Ville</label>
-          <input id="ville" type="text" value="Paris (75000)" />
+          <input id="ville" type="text" v-model="profil.ville" />
+        </div>
+
+        <div class="form-group">
+          <label for="code_postal">Code Postale</label>
+          <input id="code_postal" type="text" v-model="profil.code_postal" />
         </div>
 
         <div class="form-group">
           <label for="qualification">Qualification / Poste</label>
-          <input id="qualification" type="text" value="Ingénieur logiciel" />
-        </div>
-
-        <div class="form-group cv-upload-group">
-          <label for="cv-upload" class="cv-label">Mettre à jour mon CV</label>
-          <input id="cv-upload" type="file" accept=".pdf,.doc,.docx" />
-          <p class="current-cv-status">
-            CV actuel : <span class="cv-filename">CV_Seghiri_Ahmed.pdf</span>
-          </p>
+          <input id="qualification" type="text" v-model="profil.qualification" />
         </div>
 
         <div class="form-group checkbox-group">
           <label for="disponible">
-            <input id="disponible" type="checkbox" checked />
+            <input id="disponible" type="checkbox" v-model="profil.disponibilite" />
             Disponible immédiatement pour de nouvelles opportunités
           </label>
         </div>

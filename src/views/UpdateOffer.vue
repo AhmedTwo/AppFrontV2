@@ -1,4 +1,99 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const offerId = route.params.id
+const isLoading = ref(true)
+
+const types = [
+  { id: 1, label: 'CDI' },
+  { id: 2, label: 'CDD' },
+  { id: 3, label: 'Stage' },
+  { id: 4, label: 'Alternance' },
+  { id: 5, label: 'Freelance' },
+]
+
+const offer = ref({
+  title: '',
+  category: '',
+  location: '',
+  employment_type_id: '',
+  mission: '',
+  description: '',
+  technologies_used: '',
+  benefits: '',
+})
+
+const loadOffer = async () => {
+  const token = localStorage.getItem('auth_token')
+
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/offerById/${offerId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    // Détecte automatiquement si les données sont dans "data" ou pas
+    const data = response.data.data ? response.data.data : response.data
+
+    offer.value.title = data.title
+    offer.value.category = data.category
+    offer.value.location = data.location
+    offer.value.employment_type_id = data.employment_type_id
+    offer.value.mission = data.mission
+    offer.value.description = data.description
+    offer.value.technologies_used = data.technologies_used
+    offer.value.benefits = data.benefits
+
+    console.log(data)
+    console.log(offer)
+  } catch (error) {
+    console.error("Erreur lors du chargement de l'offre :", error)
+    alert("Impossible de charger l'offre à modifier.")
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Màj de l'offre'
+const updateOffer = async () => {
+  const token = localStorage.getItem('auth_token')
+
+  try {
+    await axios.post(
+      `http://127.0.0.1:8000/api/offerUpdate/${offerId}`,
+      {
+        title: offer.value.title,
+        category: offer.value.category,
+        location: offer.value.location,
+        employment_type_id: offer.value.employment_type_id,
+        mission: offer.value.mission,
+        description: offer.value.description,
+        technologies_used: offer.value.technologies_used,
+        benefits: offer.value.benefits,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    alert('✅ Offre mise à jour avec succès')
+    router.push('/Dashboard_Company')
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour :', error)
+    alert("❌ Erreur lors de la mise à jour de l'offre.")
+  }
+}
+
+onMounted(loadOffer)
+</script>
 
 <template>
   <div class="update-container">
@@ -7,71 +102,50 @@
       <p class="update-description">Mettez à jour les informations de l'offre ci-dessous</p>
     </div>
 
-    <form method="POST" class="update-form" action="/offers/updateOffer">
+    <div v-if="isLoading" style="text-align: center; padding: 40px">Chargement...</div>
+
+    <form v-else class="update-form" @submit.prevent="updateOffer">
       <input type="hidden" name="id" value="1" />
 
       <div class="form-group">
         <label for="inputTitre" class="form-label">Titre</label>
-        <input
-          type="text"
-          name="inputTitre"
-          id="inputTitre"
-          class="form-input"
-          placeholder="Ex: Développeur Web"
-        />
+        <input type="text" v-model="offer.title" id="inputTitre" class="form-input" />
       </div>
 
       <div class="form-group">
         <label for="inputPoste" class="form-label">Poste</label>
-        <input
-          type="text"
-          name="inputPoste"
-          id="inputPoste"
-          class="form-input"
-          placeholder="Ex: Front-End"
-        />
+        <input type="text" v-model="offer.category" id="inputPoste" class="form-input" />
       </div>
 
       <div class="form-group">
         <label for="inputAdresse" class="form-label">Adresse</label>
-        <input
-          type="text"
-          name="inputAdresse"
-          id="inputAdresse"
-          class="form-input"
-          placeholder="Ex: Paris, France"
-        />
+        <input type="text" v-model="offer.location" id="inputAdresse" class="form-input" />
       </div>
 
       <div class="form-group">
         <label for="inputContrat" class="form-label">Type de contrat</label>
-        <select id="inputContrat" name="inputContrat" class="form-select" required>
-          <option>CDI</option>
-          <option>CDD</option>
-          <option>Stage</option>
-          <option>Alternance</option>
+        <select id="inputContrat" v-model="offer.employment_type_id" class="form-select" required>
+          <option v-for="t in types" :key="t.id" :value="t.id">{{ t.label }}</option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="inputMission" class="form-label">Mission</label>
         <textarea
-          name="inputMission"
+          v-model="offer.mission"
           id="inputMission"
           class="form-textarea"
           rows="4"
-          placeholder="Décrivez la mission..."
         ></textarea>
       </div>
 
       <div class="form-group">
         <label for="inputDescription" class="form-label">Description</label>
         <textarea
-          name="inputDescription"
+          v-model="offer.description"
           id="inputDescription"
           class="form-textarea"
           rows="4"
-          placeholder="Description détaillée de l'offre..."
         ></textarea>
       </div>
 
@@ -79,50 +153,20 @@
         <label for="inputTechnologie" class="form-label">Technologie(s)</label>
         <input
           type="text"
-          name="inputTechnologie"
+          v-model="offer.technologies_used"
           id="inputTechnologie"
           class="form-input"
-          placeholder="Ex: Vue.js, Laravel, Docker"
         />
       </div>
 
       <div class="form-group">
         <label for="inputPositif" class="form-label">Points positifs</label>
         <textarea
-          name="inputPositif"
+          v-model="offer.benefits"
           id="inputPositif"
           class="form-textarea"
           rows="2"
-          placeholder="Ambiance, flexibilité, avantages..."
         ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="inputNombreParticipant" class="form-label">Nombre de participants</label>
-        <input
-          type="number"
-          name="inputNombreParticipant"
-          id="inputNombreParticipant"
-          class="form-input"
-          min="1"
-          placeholder="Ex: 5"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="inputDateCreation" class="form-label">Date de création</label>
-        <input type="date" name="inputDateCreation" id="inputDateCreation" class="form-input" />
-      </div>
-
-      <div class="form-group">
-        <label for="inputImage" class="form-label">Image (URL)</label>
-        <input
-          type="text"
-          name="inputImage"
-          id="inputImage"
-          class="form-input"
-          placeholder="https://example.com/image.jpg"
-        />
       </div>
 
       <div class="form-actions">

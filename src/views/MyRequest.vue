@@ -1,24 +1,23 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 // Assurez-vous d'importer l'image si elle est utilisée dans le template
 import ImagesLogo from '../assets/images/logo_portal_job.png'
 
-const router = useRouter()
 const route = useRoute() // Ajout de useRouter pour la redirection après suppression
 
 // La variable qui contiendra le TABLEAU des demandes de l'utilisateur
 const requests = ref([]) // Initialise à un tableau vide
 const isLoading = ref(true)
 
+//  on recup le token d'authentification depuis le localStorage
+const token = localStorage.getItem('auth_token')
+
 // Fonction de chargement des demandes de l'utilisateur connecté
 const loadRequestData = async () => {
   // Récupère l'ID de l'utilisateur depuis l'URL (passé par le header)
   const userId = route.params.id // C'est l'ID de l'utilisateur, pas de la demande !
-
-  //  on recup le token d'authentification depuis le localStorage
-  const token = localStorage.getItem('auth_token')
 
   if (!userId || userId === 'null') {
     // Vérifier aussi si la valeur est 'null' en chaîne
@@ -51,8 +50,11 @@ const deleteRequest = async (requestId) => {
   // on remplace l'alert() par une confirmation modale si possible, ici on simule.
   if (confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
     try {
-      // j'apl l'API DELETE
-      await axios.delete(`http://127.0.0.1:8000/api/deleteRequest/${requestId}`)
+      await axios.delete(`http://127.0.0.1:8000/api/deleteRequest/${requestId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
       // Retirer la demande du tableau local sans recharger toute la page
       requests.value = requests.value.filter((req) => req.id !== requestId)
@@ -108,10 +110,7 @@ onMounted(loadRequestData)
     <div class="request-card" v-for="request in requests" :key="request.id">
       <div class="card-header">
         <div class="user-avatar">
-          <img
-            :src="request.user_avatar || ImagesLogo"
-            :alt="`Photo de ${request.user_name || 'Utilisateur'}`"
-          />
+          <img :src="'http://127.0.0.1:8000/storage/' + request.photo" alt="Photo Utilisateur" />
         </div>
         <div class="user-info">
           <!-- Nom et Prénom sont séparés dans API -->
@@ -290,17 +289,20 @@ h1 {
 }
 
 .user-avatar {
-  width: 90px;
-  height: 80px;
-  border-radius: 30%;
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.685);
+  width: 105px;
+  height: 105px;
+  border: 3px solid black;
+  border-radius: 50%;
+  overflow: hidden; /* IMPORTANT : coupe l’image qui dépasse */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* optionnel */
+  object-fit: cover; /* remplit le cercle sans déformer */
 }
 
 .user-info {

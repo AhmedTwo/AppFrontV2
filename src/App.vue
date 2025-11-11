@@ -75,7 +75,7 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
         <li><a href="/Companys" class="">Nos sociétés</a></li>
 
         <li><a :href="`/myRequest/${currentUserId}`" class="">Mes demandes</a></li>
-        <li><a href="/Request" class="" v-if="!isAdmin">Les demandes</a></li>
+        <li><a href="/Request" class="">Les demandes</a></li>
 
         <li>
           <a :href="`/Dashboard_Company/${currentUserCompanyId}`" class="" v-if="isCompany"

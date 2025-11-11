@@ -1,45 +1,111 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const requestId = route.params.id
+const isLoading = ref(true)
+
+// liste officielle des types de demandes (basée sur ton ENUM)
+const types = ['RECLAMATION', 'DEMANDES', 'SUPPRESSION', 'MODIFICATION']
+
+const request = ref({
+  type: '',
+  title: '',
+  description: '',
+})
+
+const loadRequest = async () => {
+  const token = localStorage.getItem('auth_token')
+
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/requestById/${requestId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    // Détecte automatiquement si les données sont dans "data" ou pas
+    const data = response.data.data ? response.data.data : response.data
+
+    request.value.type = data.type
+    request.value.title = data.title
+    request.value.description = data.description
+
+    console.log(data)
+    console.log(request)
+  } catch (error) {
+    console.error('Erreur lors du chargement de la demande :', error)
+    alert('Impossible de charger la demande à modifier.')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Màj de la demande
+const updateRequest = async () => {
+  const token = localStorage.getItem('auth_token')
+
+  try {
+    await axios.post(
+      `http://127.0.0.1:8000/api/requestUpdate/${requestId}`,
+      {
+        type: request.value.type,
+        title: request.value.title,
+        description: request.value.description,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    alert('✅ Demande mise à jour avec succès')
+    router.push('/MyRequest')
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour :', error)
+    alert('❌ Erreur lors de la mise à jour de la demande.')
+  }
+}
+
+onMounted(loadRequest)
+</script>
 
 <template>
   <div class="update-container">
-    <!-- En-tête -->
     <div class="header-section">
       <h1>MODIFIER MA DEMANDE</h1>
       <p class="subtitle">Mettez à jour les informations de votre demande</p>
     </div>
 
-    <!-- Formulaire -->
-    <form class="update-form">
+    <div v-if="isLoading" style="text-align: center; padding: 40px">Chargement...</div>
+
+    <form v-else class="update-form" @submit.prevent="updateRequest">
       <div class="form-group">
         <label for="type">Type de demande</label>
-        <select id="type">
-          <option selected>Stage</option>
-          <option>Alternance</option>
-          <option>CDI</option>
-          <option>CDD</option>
+        <select id="type" v-model="request.type" required>
+          <option v-for="t in types" :key="t" :value="t">
+            {{ t }}
+          </option>
         </select>
       </div>
 
-      <!-- Détails de la demande -->
       <div class="form-group">
-        <label for="title">Titre de la demande</label>
-        <input type="text" id="title" value="Demande de stage" />
+        <label for="title">Titre</label>
+        <input type="text" id="title" v-model="request.title" required />
       </div>
 
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea id="description" rows="5">
-        Recherche un stage en développement web pour 6 mois.
-        </textarea>
+        <textarea id="description" rows="5" v-model="request.description" required></textarea>
       </div>
 
-      <!-- Boutons d'action -->
       <div class="action-buttons">
-        <button type="submit" class="btn-save">
-          <a href="/MyRequest" style="text-decoration: none; color: white"
-            >Enregistrer les modifications</a
-          >
-        </button>
+        <button type="submit" class="btn-save">Enregistrer les modifications</button>
         <a href="/MyRequest" class="btn-cancel">Annuler</a>
       </div>
     </form>
@@ -47,6 +113,7 @@
 </template>
 
 <style scoped>
+/* ton CSS reste inchangé */
 .update-container {
   max-width: 800px;
   margin: 50px auto;
@@ -57,7 +124,6 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* En-tête */
 .header-section {
   text-align: center;
   margin-bottom: 40px;
@@ -75,7 +141,6 @@ h1 {
   font-weight: 500;
 }
 
-/* Formulaire */
 .update-form {
   display: flex;
   flex-direction: column;
@@ -86,16 +151,6 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.form-group-inline {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-}
-
-.form-group.small {
-  flex: 1;
 }
 
 label {
@@ -121,7 +176,6 @@ textarea:focus {
   box-shadow: 0 0 4px rgba(0, 102, 255, 0.3);
 }
 
-/* Boutons */
 .action-buttons {
   display: flex;
   justify-content: center;
@@ -160,22 +214,5 @@ textarea:focus {
 .btn-cancel:hover {
   background: #f5f5f5;
   color: black;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .update-container {
-    padding: 25px;
-  }
-
-  .form-group-inline {
-    flex-direction: column;
-  }
-
-  .btn-save,
-  .btn-cancel {
-    width: 100%;
-    text-align: center;
-  }
 }
 </style>

@@ -103,6 +103,11 @@ const router = createRouter({
       component: AddOffers,
     },
     {
+      path: '/Dashboard_Company/UpdateOffer/:id',
+      name: 'Modif Offre',
+      component: UpdateOfferById,
+    },
+    {
       path: '/Dashboard_Admin',
       name: 'Tableau de Bord Administrateur',
       component: DashboardAdmin,
@@ -128,17 +133,12 @@ const router = createRouter({
       component: UpdateMyRequest,
     },
     {
-      path: '/offers/UpdateOffer',
-      name: 'Modif Offre',
-      component: UpdateOfferById,
-    },
-    {
       path: '/Dashboard_Admin/UpdateCompany',
       name: 'Modif Company',
       component: UpdateCompanyByID,
     },
     {
-      path: '/Profil/UpdateProfil',
+      path: '/Profil/UpdateProfil/:id',
       name: 'Modif Profil',
       component: UpdateProfil,
     },
