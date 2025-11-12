@@ -1,221 +1,531 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
+
+const userStore = useUserStore()
+const router = useRouter()
 
 const offers = ref([])
+const company = ref(null) // Pour stocker les détails de la société
 
 //  on recup le token d'authentification depuis le localStorage
 const token = localStorage.getItem('auth_token')
 
-const addOffer = async () => {
-  const token = localStorage.getItem('auth_token')
+//  CHARGEMENT DES OFFRES
+const loadOffers = async () => {
+  if (!token) {
+    console.error("Token d'authentification manquant.")
+    return
+  }
+
   try {
     const responses = await axios.get('http://127.0.0.1:8000/api/myOffers', {
       headers: { Authorization: `Bearer ${token}` },
     })
     offers.value = responses.data.data
   } catch (err) {
-    console.log(err)
+    console.error('Erreur lors de la récupération des offres :', err)
+    // Gestion de l'erreur d'API ou d'expiration du token
   }
 }
 
-// Fonction de suppression (appel de l'API DELETE)
+//  CHARGEMENT DES DÉTAILS DE LA SOCIÉTÉ
+const loadCompanyDetails = async () => {
+  const companyId = userStore.user?.company_id
+
+  if (!companyId) {
+    // C'est normal si l'utilisateur n'est pas lié à une entreprise (ex: simple candidat)
+    console.log("L'utilisateur n'est pas associé à une société (company_id est null).")
+    return
+  }
+
+  try {
+    // Appel de l'endpoint pour récupérer la société par son ID
+    const responses = await axios.get(`http://127.0.0.1:8000/api/companyById/${companyId}`)
+    company.value = responses.data.data
+  } catch (err) {
+    console.error("Erreur lors de la récupération des détails de l'entreprise :", err)
+  }
+}
+
+//  FONCTION DE SUPPRESSION D'OFFRE
 const deleteOffer = async (offerId) => {
-  // on remplace l'alert() par une confirmation modale si possible, ici on simule.
   if (confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) {
     try {
       await axios.delete(`http://127.0.0.1:8000/api/deleteOffer/${offerId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
 
-      // Retirer la demande du tableau local sans recharger toute la page
+      // Retirer l'offre du tableau local
       offers.value = offers.value.filter((req) => req.id !== offerId)
-      console.log(`Demande ID ${offerId} supprimée.`)
+      console.log(`Offre ID ${offerId} supprimée.`)
     } catch (err) {
       console.error("Erreur lors de la suppression de l'offre :", err)
-      prompt('Erreur lors de la suppression. Veuillez réessayer.')
+      alert('Erreur lors de la suppression. Veuillez réessayer.')
     }
   }
 }
 
-onMounted(addOffer)
+onMounted(() => {
+  loadOffers()
+  loadCompanyDetails()
+})
 </script>
 
 <template>
-  <div class="header-section">
-    <h1>MES OFFRES</h1>
-    <p class="subtitle">Découvrez ici les offres de ta société !</p>
-  </div>
-
-  <div class="action-bar">
-    <a href="/Dashboard_Company/AddOffers" class="btn-add">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
-        />
-        <path
-          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
-        />
-      </svg>
-      Ajouter une offre
-    </a>
-  </div>
-
-  <div class="offers-grid">
-    <div class="offer-card" v-for="offer in offers" :key="offer.id">
-      <div class="card-image">
-        <img :src="'http://127.0.0.1:8000' + offer.image_url" alt="Image offre" />
-        <div class="image-overlay">
-          <span class="badge badge-employment">{{ offer.employment_type.name }}</span>
-          <span class="badge badge-category">{{ offer.category }}</span>
-        </div>
+  <div class="main-container">
+    <div v-if="company" class="company-details-section">
+      <div class="company-header">
+        <h1>{{ company.name }}</h1>
+        <p class="subtitle">
+          Dans le domaine de la '{{ company.industry }}' situé à {{ company.address }}
+        </p>
       </div>
 
-      <div class="card-body">
-        <h3 class="offer-title">{{ offer.title }}</h3>
-        <p class="offer-description">{{ offer.description }}</p>
-
-        <div class="offer-details">
-          <div class="detail-row">
-            <svg
-              class="icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            <span>{{ offer.location }}</span>
+      <div class="company-info-grid">
+        <div class="detail-card">
+          <div class="detail-content">
+            <h2 class="card-title">Informations Clés :</h2>
+            <p>
+              <strong class="label">N° Siret :</strong>
+              <span class="data">{{ company.n_siret }}</span>
+            </p>
+            <p>
+              <strong class="label">Email :</strong>
+              <span class="data">{{ company.email_company }}</span>
+            </p>
+            <p>
+              <strong class="label">Employés :</strong>
+              <span class="data">{{ company.number_of_employees }}</span>
+            </p>
+            <p>
+              <strong class="label">Statut :</strong>
+              <span
+                :class="[
+                  'badge-status',
+                  {
+                    'badge-active': company.status === 'Approuvée',
+                    'badge-pending': company.status === 'En_attente',
+                    'badge-inactive': company.status === 'Refusée',
+                  },
+                ]"
+              >
+                {{ company.status }}
+              </span>
+            </p>
+            <p>
+              <strong class="label">Crée le :</strong>
+              <span class="data">{{ company.created_at }}</span>
+            </p>
           </div>
-
-          <div class="detail-row">
+          <a
+            :href="`/Dashboard_Company/UpdateCompany/${company.id}`"
+            class="btn btn-update-company"
+          >
             <svg
-              class="icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="currentColor"
+              viewBox="0 0 16 16"
             >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              <path
+                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+              />
             </svg>
-            <span>{{ offer.participants_count }} postulants</span>
-          </div>
-
-          <div class="detail-row">
-            <svg
-              class="icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 6v6l4 2" />
-            </svg>
-            <span>{{ offer.created_at }}</span>
-          </div>
+            Modifier la Société
+          </a>
         </div>
 
-        <div class="mission-section" v-if="offer.mission">
-          <strong>Mission :</strong>
-          <p>{{ offer.mission }}</p>
-        </div>
-
-        <div class="benefits-section" v-if="offer.benefits">
-          <strong>Avantages :</strong>
-          <p>{{ offer.benefits }}</p>
+        <div class="detail-card card-description">
+          <img
+            :src="'http://127.0.0.1:8000/storage/' + company.logo"
+            :alt="`Logo ${company.name}`"
+            class="company-logo"
+            v-if="company.logo"
+          />
+          <p class="company-description">
+            <span style="font-weight: 800">Description :</span> {{ company.description }}
+          </p>
         </div>
       </div>
+    </div>
 
-      <div class="card-footer">
-        <a :href="`/Dashboard_Company/UpdateOffer/${offer.id}`" class="btn btn-update">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-pencil-square"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-            />
-            <path
-              fill-rule="evenodd"
-              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-            />
-          </svg>
-          Modifier</a
+    <div v-else-if="userStore.user?.company_id !== null" class="loading-message">
+      <p>Chargement des détails de la société...</p>
+    </div>
+
+    <hr v-if="company" class="divider" />
+
+    <div class="header-section">
+      <h1>MES OFFRES</h1>
+      <p class="subtitle">Gérez ici toutes les offres d'emploi de votre société !</p>
+    </div>
+
+    <div class="action-bar">
+      <a href="/Dashboard_Company/AddOffers" class="btn-add">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          fill="currentColor"
+          viewBox="0 0 16 16"
         >
-        <button
-          type="button"
-          class="btn btn-delete"
-          title="Supprimer cette demande"
-          @click="deleteOffer(offer.id)"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            fill="currentColor"
-            viewBox="0 0 16 16"
+          <path
+            d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
+          />
+          <path
+            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+          />
+        </svg>
+        Ajouter une offre
+      </a>
+    </div>
+
+    <div class="offers-grid">
+      <div class="offer-card" v-for="offer in offers" :key="offer.id">
+        <div class="card-image">
+          <img :src="'http://127.0.0.1:8000' + offer.image_url" alt="Image offre" />
+          <div class="image-overlay">
+            <span class="badge badge-employment">{{ offer.employment_type.name }}</span>
+            <span class="badge badge-category">{{ offer.category }}</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <h3 class="offer-title">{{ offer.title }}</h3>
+          <p class="offer-description">{{ offer.description }}</p>
+
+          <div class="offer-details">
+            <div class="detail-row">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span>{{ offer.location }}</span>
+            </div>
+
+            <div class="detail-row">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span>{{ offer.participants_count }} postulants</span>
+            </div>
+
+            <div class="detail-row">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+              <span>{{ offer.created_at }}</span>
+            </div>
+          </div>
+
+          <div class="mission-section" v-if="offer.mission">
+            <strong>Mission :</strong>
+            <p>{{ offer.mission }}</p>
+          </div>
+
+          <div class="benefits-section" v-if="offer.benefits">
+            <strong>Avantages :</strong>
+            <p>{{ offer.benefits }}</p>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <a :href="`/Dashboard_Company/UpdateOffer/${offer.id}`" class="btn btn-update">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+              />
+              <path
+                fill-rule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+              />
+            </svg>
+            Modifier
+          </a>
+          <button
+            type="button"
+            class="btn btn-delete"
+            title="Supprimer cette demande"
+            @click="deleteOffer(offer.id)"
           >
-            <path
-              d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
-            />
-          </svg>
-          Supprimer
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
+              />
+            </svg>
+            Supprimer
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* COULEURS UTILES */
-/* Primaire (Modif/Accentuation) : #3498db (Bleu) */
-/* Secondaire (Supprimer) : #dc3545 (Rouge) */
-/* Fond de carte : #ffffff */
-/* Fond de page : #f8f9fa (implicite par l'absence de couleur de fond globale) */
+/* CONTENEUR PRINCIPAL */
+.main-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
 
-/* -------------------
-   EN-TÊTE
-   ------------------- */
+/* SECTION DÉTAILS DE LA SOCIÉTÉ */
+.company-details-section {
+  margin-bottom: 60px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.company-header {
+  padding: 32px 32px 24px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.company-header h1 {
+  font-size: 2rem;
+  color: #111827;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.company-header .subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.company-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+}
+
+.detail-card {
+  background: white;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #e5e7eb;
+}
+
+.detail-card:last-child {
+  border-right: none;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-content p {
+  margin: 14px 0;
+  font-size: 0.95rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.label {
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 110px;
+  display: inline-block;
+  font-size: 0.9rem;
+}
+
+.data {
+  color: #111827;
+}
+
+.card-description {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.company-logo {
+  max-width: 140px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.company-description {
+  line-height: 1.6;
+  color: #374151;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+/* Badges de Statut */
+.badge-status {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.badge-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Bouton Modifier Société */
+.btn-update-company {
+  margin-top: 24px;
+  background: #3498db;
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+  padding: 11px 22px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.btn-update-company:hover {
+  background: #2980b9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-update-company svg {
+  width: 16px;
+  height: 16px;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #475569;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #a3a3a3, rgba(0, 0, 0, 0));
+  margin: 50px 0;
+}
+
+/* EN-TÊTE SECTION OFFRES */
 .header-section {
   text-align: center;
   margin-bottom: 50px;
   padding: 0 20px;
 }
 
-h1 {
+.header-section h1 {
   font-size: 2.2rem;
   font-weight: 700;
-  color: #1e293b; /* Couleur de titre sombre */
+  color: #1e293b;
   letter-spacing: -0.5px;
 }
 
-.subtitle {
+.header-section .subtitle {
   font-size: 1.1rem;
   color: #64748b;
-  font-weight: 400;
   letter-spacing: 0.3px;
 }
 
-/* -------------------
-   GRILLE DES OFFRES
-   ------------------- */
+/* Barre d'action */
+.action-bar {
+  max-width: 67%;
+  margin: 0 auto 30px;
+}
+
+.btn-add {
+  display: inline-flex;
+  gap: 8px;
+  padding: 12px 20px;
+  background: white;
+  color: #0066ff;
+  border: 2px solid #0066ff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
+}
+
+.btn-add:hover {
+  background: #0066ff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+.btn-add:hover svg {
+  transform: rotate(90deg);
+}
+
+/* GRILLE DES OFFRES */
 .offers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -225,9 +535,7 @@ h1 {
   padding: 0 24px;
 }
 
-/* -------------------
-   CARTE D'OFFRE (DESIGN MODERNE)
-   ------------------- */
+/* CARTE D'OFFRE */
 .offer-card {
   background: white;
   border-radius: 16px;
@@ -279,7 +587,7 @@ h1 {
 /* Image de la carte */
 .card-image {
   position: relative;
-  height: 160px; /* Taille ajustée */
+  height: 160px;
   overflow: hidden;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
@@ -324,16 +632,15 @@ h1 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
 }
 
 .badge-category {
   background: linear-gradient(135deg, rgba(52, 152, 219, 0.9) 0%, rgba(41, 128, 185, 0.9) 100%);
-  color: white;
 }
 
 .badge-employment {
   background: linear-gradient(135deg, rgba(46, 204, 113, 0.9) 0%, rgba(39, 174, 96, 0.9) 100%);
-  color: white;
 }
 
 /* Corps de carte */
@@ -343,7 +650,6 @@ h1 {
   flex-direction: column;
   gap: 10px;
   flex: 1;
-  background: white;
 }
 
 .offer-title {
@@ -367,11 +673,11 @@ h1 {
   margin: 0;
 }
 
-/* Détails de l'offre (icônes) */
+/* Détails de l'offre */
 .offer-details {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Espace réduit */
+  gap: 6px;
   margin-top: 2px;
 }
 
@@ -379,20 +685,20 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px; /* Padding réduit */
+  padding: 6px 10px;
   background: #f8fafc;
   border-radius: 6px;
-  font-size: 0.8rem; /* Taille de police réduite */
+  font-size: 0.8rem;
   transition: all 0.3s ease;
 }
 
 .detail-row:hover {
-  background: #e9f3fe; /* Changement de fond au survol */
-  transform: translateX(3px); /* Effet plus subtil */
+  background: #e9f3fe;
+  transform: translateX(3px);
 }
 
 .icon {
-  width: 16px; /* Icône plus petite */
+  width: 16px;
   height: 16px;
   color: #3498db;
   flex-shrink: 0;
@@ -407,10 +713,10 @@ h1 {
 .mission-section,
 .benefits-section {
   margin-top: 2px;
-  padding: 10px; /* Padding réduit */
+  padding: 10px;
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 8px;
-  font-size: 0.78rem; /* Taille de police très réduite */
+  font-size: 0.78rem;
   border: 1px solid #bae6fd;
 }
 
@@ -430,10 +736,7 @@ h1 {
   line-height: 1.4;
 }
 
-/* -------------------
-   PIED DE CARTE (BOUTONS)
-   ------------------- */
-
+/* PIED DE CARTE */
 .card-footer {
   padding: 14px 18px;
   border-top: 1px solid #f1f5f9;
@@ -448,19 +751,15 @@ h1 {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 0.9rem; /* Taille de police ajustée */
+  font-size: 0.9rem;
   border-radius: 8px;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: 10px 18px; /* Padding standard pour les boutons */
+  padding: 10px 18px;
 }
 
-.btn svg {
-  transition: transform 0.3s ease;
-}
-
-/* ==== Bouton Modifier (Bleu) ==== */
+/* Bouton Modifier */
 .btn-update {
   background: white;
   color: #3498db;
@@ -475,7 +774,7 @@ h1 {
   box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
-/* ==== Bouton Supprimer (Rouge) ==== */
+/* Bouton Supprimer */
 .btn-delete {
   background: transparent;
   color: #dc3545;
@@ -490,45 +789,7 @@ h1 {
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
-/* Barre d'action */
-.action-bar {
-  max-width: 67%;
-  margin: 0 auto 30px;
-}
-
-.btn-add {
-  display: inline-flex;
-  gap: 8px;
-  padding: 12px 20px;
-  background: white;
-  color: #0066ff;
-  border: 2px solid #0066ff;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.521);
-}
-
-.btn-add:hover {
-  background: #0066ff;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
-}
-
-.btn-add svg {
-  transition: transform 0.3s ease;
-}
-
-.btn-add:hover svg {
-  transform: rotate(90deg);
-}
-
-/* -------------------
-   RESPONSIVE
-   ------------------- */
-
+/* RESPONSIVE */
 @media (max-width: 1024px) {
   .offers-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -536,8 +797,28 @@ h1 {
   }
 }
 
+@media (max-width: 900px) {
+  .company-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-card {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .detail-card:last-child {
+    border-bottom: none;
+  }
+
+  .btn-update-company {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
-  h1 {
+  .header-section h1 {
     font-size: 1.8rem;
   }
 

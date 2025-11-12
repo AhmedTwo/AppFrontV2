@@ -34,8 +34,7 @@ onMounted(() => {
 // computed pour récupérer le prenom
 const UserName = computed(() => {
   const prenom = userStore.user.prenom || ''
-  const nom = userStore.user.nom || ''
-  // on prend la première lettre du prénom, sinon du nom
+  // on prend la première lettre du prénom
   return (prenom || '').toUpperCase() // pour la majuscule
 })
 

@@ -96,21 +96,23 @@ const router = createRouter({
       path: '/Dashboard_Company/:companyId',
       name: 'Tableau de Bord Société',
       component: DashboardCompany,
-    },
-    {
-      path: '/Dashboard_Company/AddOffers',
-      name: "Ajout d'une offre",
-      component: AddOffers,
-    },
-    {
-      path: '/Dashboard_Company/UpdateOffer/:id',
-      name: 'Modif Offre',
-      component: UpdateOfferById,
-    },
-    {
-      path: '/Dashboard_Admin',
-      name: 'Tableau de Bord Administrateur',
-      component: DashboardAdmin,
+      children: [
+        {
+          path: 'AddOffers', // Le chemin devient juste 'AddOffers'
+          name: "Ajout d'une offre",
+          component: AddOffers,
+        },
+        {
+          path: 'UpdateOffer/:id', // Le chemin devient 'UpdateOffer/:id'
+          name: 'Modif Offre',
+          component: UpdateOfferById,
+        },
+        {
+          path: 'UpdateCompany/:id', // Le chemin devient 'UpdateCompany/:id'
+          name: 'Modif Company',
+          component: UpdateCompanyByID,
+        },
+      ],
     },
     {
       path: '/Favoris',
