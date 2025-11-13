@@ -104,12 +104,12 @@ const router = createRouter({
         },
         {
           path: 'UpdateOffer/:id', // Le chemin devient 'UpdateOffer/:id'
-          name: 'Modif Offre',
+          name: 'Modif Offre Company',
           component: UpdateOfferById,
         },
         {
           path: 'UpdateCompany/:id', // Le chemin devient 'UpdateCompany/:id'
-          name: 'Modif Company',
+          name: 'Modif Company Dashboard',
           component: UpdateCompanyByID,
         },
       ],
@@ -136,7 +136,7 @@ const router = createRouter({
     },
     {
       path: '/Dashboard_Admin/UpdateCompany',
-      name: 'Modif Company',
+      name: 'Modif Company Admin',
       component: UpdateCompanyByID,
     },
     {
