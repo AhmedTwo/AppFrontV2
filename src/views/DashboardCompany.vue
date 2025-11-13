@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -120,10 +120,7 @@ onMounted(() => {
               <span class="data">{{ company.created_at }}</span>
             </p>
           </div>
-          <a
-            :href="`/Dashboard_Company/UpdateCompany/${company.id}`"
-            class="btn btn-update-company"
-          >
+          <RouterLink :to="{ name: 'Modif Company Dashboard' }" class="btn btn-update-company">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -140,7 +137,7 @@ onMounted(() => {
               />
             </svg>
             Modifier la Société
-          </a>
+          </RouterLink>
         </div>
 
         <div class="detail-card card-description">
@@ -169,7 +166,7 @@ onMounted(() => {
     </div>
 
     <div class="action-bar">
-      <a href="/Dashboard_Company/AddOffers" class="btn-add">
+      <RouterLink :to="{ name: `Ajout d'une offre` }" class="btn-add">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
@@ -185,7 +182,7 @@ onMounted(() => {
           />
         </svg>
         Ajouter une offre
-      </a>
+      </RouterLink>
     </div>
 
     <div class="offers-grid">
@@ -259,7 +256,10 @@ onMounted(() => {
         </div>
 
         <div class="card-footer">
-          <a :href="`/Dashboard_Company/UpdateOffer/${offer.id}`" class="btn btn-update">
+          <RouterLink
+            :to="{ name: 'Modif Offre Company', params: { id: company.id } }"
+            class="btn btn-update"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -276,7 +276,7 @@ onMounted(() => {
               />
             </svg>
             Modifier
-          </a>
+          </RouterLink>
           <button
             type="button"
             class="btn btn-delete"

@@ -18,7 +18,11 @@ const profil = ref({
   code_postal: '',
   qualification: '',
   disponibilite: '',
+  photo: '',
 })
+
+const newPhoto = ref(null)
+const photoPreview = ref(null)
 
 const loadProfil = async () => {
   const token = localStorage.getItem('auth_token')
@@ -33,17 +37,23 @@ const loadProfil = async () => {
     // Détecte automatiquement si les données sont dans "data" ou pas
     const data = response.data.data ? response.data.data : response.data
 
-    profil.value.nom = data.nom
-    profil.value.prenom = data.prenom
-    profil.value.email = data.email
-    profil.value.telephone = data.telephone
-    profil.value.ville = data.ville
-    profil.value.code_postal = data.code_postal
-    profil.value.qualification = data.qualification
-    profil.value.disponibilite = !!data.disponibilite // convertit 0/1 ou true/false en boolean
+    profil.value = {
+      ...profil.value,
+      nom: data.nom,
+      prenom: data.prenom,
+      email: data.email,
+      telephone: data.telephone,
+      ville: data.ville,
+      code_postal: data.code_postal,
+      qualification: data.qualification,
+      disponibilite: !!data.disponibilite,
+      photo: data.photo,
+    }
 
-    console.log(data)
-    console.log(profil)
+    // si une photo existe, on prépare l'aperçu
+    if (data.photo) {
+      photoPreview.value = `http://127.0.0.1:8000/storage/${data.photo}`
+    }
   } catch (error) {
     console.error('Erreur lors du chargement du Profil :', error)
     alert('Impossible de charger le profil à modifier.')
@@ -52,29 +62,39 @@ const loadProfil = async () => {
   }
 }
 
-// Màj de la demande
+const handlePhotoChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    newPhoto.value = file
+    photoPreview.value = URL.createObjectURL(file)
+  }
+}
+
 const updateProfil = async () => {
   const token = localStorage.getItem('auth_token')
+  const formData = new FormData()
+
+  formData.append('nom', profil.value.nom)
+  formData.append('prenom', profil.value.prenom)
+  formData.append('email', profil.value.email)
+  formData.append('telephone', profil.value.telephone)
+  formData.append('ville', profil.value.ville)
+  formData.append('code_postal', profil.value.code_postal)
+  formData.append('qualification', profil.value.qualification)
+  formData.append('disponibilite', profil.value.disponibilite ? 1 : 0)
+
+  // si une nouvelle photo a été sélectionnée
+  if (newPhoto.value) {
+    formData.append('photo', newPhoto.value)
+  }
 
   try {
-    await axios.post(
-      `http://127.0.0.1:8000/api/userUpdate/${profilId}`,
-      {
-        nom: profil.value.nom,
-        prenom: profil.value.prenom,
-        email: profil.value.email,
-        telephone: profil.value.telephone,
-        ville: profil.value.ville,
-        code_postal: profil.value.code_postal,
-        qualification: profil.value.qualification,
-        disponibilite: profil.value.disponibilite,
+    await axios.post(`http://127.0.0.1:8000/api/userUpdate/${profilId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
+    })
 
     alert('✅ Profil mis à jour avec succès')
     router.push('/Profil')
@@ -95,6 +115,23 @@ onMounted(loadProfil)
       <div v-if="isLoading" style="text-align: center; padding: 40px">Chargement...</div>
 
       <form v-else class="profil-form" @submit.prevent="updateProfil">
+        <div class="photo-upload-section">
+          <div class="photo-preview-wrapper">
+            <img
+              v-if="photoPreview"
+              :src="photoPreview"
+              alt="Photo de profil"
+              class="profil-photo-preview"
+            />
+            <div v-else class="no-photo">Aucune photo</div>
+          </div>
+
+          <label class="btn-change-photo">
+            Changer la photo
+            <input type="file" accept="image/*" @change="handlePhotoChange" hidden />
+          </label>
+        </div>
+
         <hr class="separator" />
 
         <div class="form-group">

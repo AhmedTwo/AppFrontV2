@@ -1,6 +1,4 @@
 <script setup>
-import ImagesUser from '../assets/images/userDefault.jpeg'
-
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 // on importe useRoute de vue-router pour accéder aux paramètres de l'URL
@@ -43,7 +41,11 @@ onMounted(readCompany)
   <div class="page-background-profil" v-if="user">
     <div class="profil-container">
       <div class="photo-edit-zone">
-        <img class="profil-photo" :src="ImagesUser" alt="Photo de profil" />
+        <img
+          class="profil-photo"
+          :src="'http://127.0.0.1:8000/storage/' + user.photo"
+          alt="Photo de profil"
+        />
         <a
           :href="`/Profil/UpdateProfil/${user.id}`"
           class="btn-edit-float"

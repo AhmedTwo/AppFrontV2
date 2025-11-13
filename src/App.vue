@@ -48,14 +48,8 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
 <template>
   <header id="headerOne">
     <nav id="navOne">
-      <div class="nav-left" v-if="!userStore.isAuthenticated">
+      <div class="nav-left">
         <a href="/" class="logo">
-          <img :src="ImagesLogo" alt="fond logo portal job" />
-        </a>
-      </div>
-
-      <div class="nav-left" v-if="userStore.isAuthenticated">
-        <a href="/home" class="logo">
           <img :src="ImagesLogo" alt="fond logo portal job" />
         </a>
       </div>
@@ -68,24 +62,22 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
       </ul>
 
       <ul class="menu" v-if="userStore.isAuthenticated">
-        <li><a href="/home" class="">Accueil</a></li>
-
         <li><a href="/offers" class="">Nos offres</a></li>
         <li><a href="/Companys" class="">Nos sociétés</a></li>
 
-        <li><a :href="`/myRequest/${currentUserId}`" class="">Mes demandes</a></li>
-        <li><a href="/Request" class="">Les demandes</a></li>
+        <li><a href="/MyRequest" class="">Mes demandes</a></li>
+        <li><a href="/Request" class="" v-if="!isAdmin">Les demandes</a></li>
 
         <li>
-          <a :href="`/Dashboard_Company/${currentUserCompanyId}`" class="" v-if="isCompany"
-            >Dashboard C</a
+          <a href="/Dashboard_Company" class="" v-if="isCompany"
+            >Dashboard</a
           >
         </li>
 
         <li class="dropdown" v-if="isAdmin">
           <a href="#">Administration ▾</a>
           <ul class="dropdown-content">
-            <li><a href="/Dashboard_Admin" class="">Dashboard A</a></li>
+            <li><a href="/Dashboard_Admin" class="">Dashboard</a></li>
             <li><a href="/Request" class="">Les demandes</a></li>
           </ul>
         </li>
@@ -125,7 +117,7 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
   </footer>
 </template>
 
-<style>
+<style scoped>
 .logo img {
   width: 250px;
 }
@@ -210,7 +202,6 @@ const isAdmin = computed(() => userStore.user?.role === 'admin')
   align-items: center;
   gap: 1.5rem;
 }
-
 .user-info {
   display: flex;
   align-items: center;

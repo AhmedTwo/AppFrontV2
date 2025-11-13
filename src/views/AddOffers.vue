@@ -55,7 +55,7 @@ const addOffer = async () => {
 
     // redirection après succès
     setTimeout(() => {
-      router.push('/Dashboard_Company/MyOffers')
+      router.push('/Dashboard_Company')
     }, 1000)
   } catch (err) {
     console.error("Erreur lors de l'ajout de l'offre:", err.response?.data || err)

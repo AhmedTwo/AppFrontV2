@@ -83,7 +83,7 @@ const router = createRouter({
       component: OffersCompany,
     },
     {
-      path: '/myRequest/:id', // id de users
+      path: '/MyRequest', // id de users
       name: 'Mes Demandes',
       component: myRequest,
     },
@@ -93,26 +93,32 @@ const router = createRouter({
       component: Request,
     },
     {
-      path: '/Dashboard_Company/:companyId',
+      path: '/Request',
+      name: 'Toutes les Demandes',
+      component: Request,
+    },
+    // Route Dashboard Principal
+    {
+      path: '/Dashboard_Company', // Gardez-la simple
       name: 'Tableau de Bord Société',
-      component: DashboardCompany,
-      children: [
-        {
-          path: 'AddOffers', // Le chemin devient juste 'AddOffers'
-          name: "Ajout d'une offre",
-          component: AddOffers,
-        },
-        {
-          path: 'UpdateOffer/:id', // Le chemin devient 'UpdateOffer/:id'
-          name: 'Modif Offre Company',
-          component: UpdateOfferById,
-        },
-        {
-          path: 'UpdateCompany/:id', // Le chemin devient 'UpdateCompany/:id'
-          name: 'Modif Company Dashboard',
-          component: UpdateCompanyByID,
-        },
-      ],
+      component: DashboardCompany, // Ceci est maintenant la page unique du Dashboard
+    },
+
+    // Routes d'action (doivent être des pages complètes)
+    {
+      path: '/Dashboard_Company/AddOffers',
+      name: "Ajout d'une offre",
+      component: AddOffers,
+    },
+    {
+      path: '/Dashboard_Company/UpdateOffer/:id',
+      name: 'Modif Offre Company',
+      component: UpdateOfferById,
+    },
+    {
+      path: '/Dashboard_Company/UpdateCompany',
+      name: 'Modif Company Dashboard',
+      component: UpdateCompanyByID,
     },
     {
       path: '/Favoris',
@@ -135,9 +141,9 @@ const router = createRouter({
       component: UpdateMyRequest,
     },
     {
-      path: '/Dashboard_Admin/UpdateCompany',
-      name: 'Modif Company Admin',
-      component: UpdateCompanyByID,
+      path: '/Dashboard_Admin',
+      name: 'Dashboard Admin',
+      component: DashboardAdmin,
     },
     {
       path: '/Profil/UpdateProfil/:id',

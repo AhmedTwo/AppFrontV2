@@ -2,9 +2,9 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
-// Assurez-vous d'importer l'image si elle est utilisée dans le template
-import ImagesLogo from '../assets/images/logo_portal_job.png'
+import { useUserStore } from '@/stores/user'
 
+const userStore = useUserStore()
 const route = useRoute() // Ajout de useRouter pour la redirection après suppression
 
 // La variable qui contiendra le TABLEAU des demandes de l'utilisateur
@@ -17,7 +17,7 @@ const token = localStorage.getItem('auth_token')
 // Fonction de chargement des demandes de l'utilisateur connecté
 const loadRequestData = async () => {
   // Récupère l'ID de l'utilisateur depuis l'URL (passé par le header)
-  const userId = route.params.id // C'est l'ID de l'utilisateur, pas de la demande !
+  const userId = userStore.user.id // C'est l'ID de l'utilisateur, pas de la demande !
 
   if (!userId || userId === 'null') {
     // Vérifier aussi si la valeur est 'null' en chaîne
