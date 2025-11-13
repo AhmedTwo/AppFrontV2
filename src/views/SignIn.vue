@@ -31,7 +31,7 @@ const loginUser = async () => {
     localStorage.setItem('auth_token', responses.data.token)
     userStore.login(responses.data.user)
     // console.log(responses.data) // Affiche la réponse du serveur dans la console (pour débogage).
-    router.push('/Home') // Redirige l'utilisateur vers la page '/Home'. suite de la connexion réussi.
+    router.push('/offers') // Redirige l'utilisateur vers la page '/Home'. suite de la connexion réussi.
   } catch (err) {
     console.log(err) // Affiche l'erreur complète dans la console (pour le développeur).
     // Vérifie si l'erreur est une réponse HTTP spécifique (ex: 401 Unauthorized).
