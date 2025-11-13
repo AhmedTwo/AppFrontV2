@@ -105,7 +105,10 @@ onMounted(readCompany)
             </td>
             <td data-label="Logo" class="logo-cell">
               <a href="/offers/offerCompany" class="logo-link">
-                <img :src="companys.logo" :alt="`Logo ${companys.name}`" />
+                <img
+                  :src="'http://127.0.0.1:8000/storage/' + companys.logo"
+                  :alt="`Logo ${companys.name}`"
+                />
               </a>
             </td>
           </tr>
