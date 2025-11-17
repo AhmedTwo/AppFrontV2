@@ -58,9 +58,15 @@ const router = createRouter({
       component: Accueil,
     },
     {
-      path: '/Home/apply/:id',
+      path: '/offers/apply/:id',
       name: "Postuler à l'offre",
       component: Apply,
+      props: (route) => ({
+        // On crée une prop "offerId" qui sera envoyée au composant
+        // On récupère l'ID depuis l'URL : route.params.id  (ex: "/apply/12" → "12")
+        // On convertit la string "12" en nombre 12 avec Number() car le composant attend un Number
+        offerId: Number(route.params.id),
+      }),
     },
     {
       path: '/Offers',

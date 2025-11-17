@@ -114,7 +114,7 @@ const isCompany = computed(() => userStore.user?.role === 'company')
       </div>
 
       <div class="card-footer" v-if="userStore.isAuthenticated && !isCompany">
-        <a :href="`/Home/apply/${offer.id}`" class="btn-apply">
+        <a :href="`/offers/apply/${offer.id}`" class="btn-apply">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"

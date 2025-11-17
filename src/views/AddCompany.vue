@@ -3,12 +3,15 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
+// Initialisation du routeur Vue pour la redirection
 const router = useRouter()
 
-const loading = ref(false)
-const error = ref(null)
-const success = ref(false)
+// --- État de l'interface utilisateur ---
+const loading = ref(false) // Indicateur de chargement / Soumission en cours
+const error = ref(null) // Stocke les messages d'erreur à afficher
+const success = ref(false) // Indicateur de succès
 
+// --- Données du formulaire SOCIÉTÉ ---
 const companyData = ref({
   name: '',
   number_of_employees: '',
@@ -17,32 +20,54 @@ const companyData = ref({
   latitude: '',
   longitude: '',
   description: '',
-  email_company: '',
+  email_company: '', // Email de contact de la société
   n_siret: '',
-  logo: null,
+  logo: null, // Fichier logo
 })
 
+// --- Données du formulaire UTILISATEUR (Administrateur de la société) ---
 const userData = ref({
   nom: '',
   prenom: '',
   telephone: '',
   ville: '',
   code_postal: '',
-  photo: null,
-  // company_id sera rempli dynamiquement après la création de la société
+  photo: null, // Fichier photo
+  // company_id sera lié après l'étape 1
 })
 
+// Gestion de l'upload de la photo utilisateur
 const handlePhotoUpload = (event) => {
   const file = event.target.files ? event.target.files[0] : null
   userData.value.photo = file
 }
 
+// Gestion de l'upload du logo de la société
 const handleLogoUpload = (event) => {
   const file = event.target.files ? event.target.files[0] : null
   companyData.value.logo = file
 }
 
-// FONCTION DE SOUMISSION (Société + Utilisateur)
+// --- Fonction Utilitaire ---
+/**
+ * Génère une chaîne aléatoire de la longueur spécifiée.
+ * @param {number} length Longueur du mot de passe (min 8 recommandé).
+ * @returns {string} Le mot de passe généré.
+ */
+const generateRandomPassword = (length = 8) => {
+  // Caractères autorisés : minuscules, majuscules, chiffres et quelques symboles
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
+  let password = ''
+  for (let i = 0; i < length; i++) {
+    // Sélectionne un caractère aléatoire
+    password += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return password
+}
+
+// =======================================================================
+// FONCTION DE SOUMISSION PRINCIPALE (Société -> Utilisateur -> E-mails)
+// =======================================================================
 const submitForm = async () => {
   // DÉBUT DE LA VALIDATION SIRET PERSONNALISÉE
   if (companyData.value.n_siret.length !== 14) {
@@ -55,12 +80,19 @@ const submitForm = async () => {
   error.value = null
   success.value = false
 
+  // Variables pour stocker les données générées
+  let autoEmail = ''
+  let autoPassword = ''
+  let newCompanyId = null
+
   try {
-    // AJOUT DE LA SOCIÉTÉ (AddCompany)
+    // -------------------------------------------------------------------
+    // ÉTAPE 1 : AJOUT DE LA SOCIÉTÉ (API: /api/addCompany)
+    // -------------------------------------------------------------------
     console.log('Étape 1 : Envoi des données de la société...')
 
     const companyFormData = new FormData()
-
+    // Remplissage des données de la société
     companyFormData.append('name', companyData.value.name)
     companyFormData.append('number_of_employees', companyData.value.number_of_employees)
     companyFormData.append('industry', companyData.value.industry)
@@ -71,7 +103,6 @@ const submitForm = async () => {
     companyFormData.append('email_company', companyData.value.email_company)
     companyFormData.append('n_siret', companyData.value.n_siret)
 
-    // Ajout du fichier logo s'il existe
     if (companyData.value.logo) {
       companyFormData.append('logo', companyData.value.logo)
     } else {
@@ -82,54 +113,103 @@ const submitForm = async () => {
       'http://127.0.0.1:8000/api/addCompany',
       companyFormData,
     )
-
     console.log('Société ajoutée (Réponse API) :', companyResponse.data)
 
-    const newCompanyId = companyResponse.data.data.id
+    // Récupération de l'ID pour la liaison avec l'utilisateur
+    newCompanyId = companyResponse.data.data.id
 
     if (!newCompanyId) {
       throw new Error("L'API n'a pas retourné l'ID de la société créée.")
     }
-
     console.log(`ID de la société récupéré : ${newCompanyId}.`)
 
-    // AJOUT DE L'UTILISATEUR
+    // -------------------------------------------------------------------
+    // ÉTAPE 2 : AJOUT DE L'UTILISATEUR (API: /api/addUser)
+    // -------------------------------------------------------------------
     console.log("Étape 2 : Envoi des données de l'utilisateur (avec Company ID)...")
 
-    // Génération des champs automatiques
+    // Génération des identifiants (Email et Mot de passe brut)
     const slugName = companyData.value.name.toLowerCase().replace(/\s/g, '-')
-    const autoEmail = `${slugName}@company.com`
-    const autoPassword = 'password'
+    autoEmail = `${slugName}@company.com`
+    autoPassword = generateRandomPassword(8)
 
     const userFormData = new FormData()
-
+    // Remplissage des données utilisateur
     userFormData.append('nom', userData.value.nom)
     userFormData.append('prenom', userData.value.prenom)
     userFormData.append('telephone', userData.value.telephone)
     userFormData.append('ville', userData.value.ville)
     userFormData.append('code_postal', userData.value.code_postal)
-    userFormData.append('company_id', newCompanyId) // Liaison
+    userFormData.append('company_id', newCompanyId) // Liaison avec l'ID de la société
 
-    // Champs automatiques
+    // Champs automatiques (nécessaires pour la BDD et l'e-mail)
     userFormData.append('email', autoEmail)
-    userFormData.append('password', autoPassword)
-    userFormData.append('disponibilite', 0) // 0 ou 1 si le champ est 'boolean'
+    userFormData.append('password', autoPassword) // Mot de passe brut
+    userFormData.append('disponibilite', 0)
 
-    // Ajout du fichier photo s'il existe
     if (userData.value.photo) {
       userFormData.append('photo', userData.value.photo)
     }
 
     const userResponse = await axios.post('http://127.0.0.1:8000/api/addUser', userFormData)
+    console.log('Utilisateur ajouté (Réponse API) :', userResponse.data)
 
-    console.log('Utilisateur ajoutée (Réponse API) :', userResponse.data) // SUCCÈS
+    // -------------------------------------------------------------------
+    // ÉTAPE 3 : ENVOI DES IDENTIFIANTS PAR EMAIL (API: /api/send-identifiants-company)
+    // -------------------------------------------------------------------
+    console.log("Étape 3 : Déclenchement de l'envoi des identifiants par e-mail...")
 
+    const emailPayload = {
+      company_name: companyData.value.name,
+      company_email: companyData.value.email_company, // Email où sera envoyé le mail des identifiants
+      user_login_email: autoEmail, // Login généré
+      user_raw_password: autoPassword, // Mot de passe généré
+      user_full_name: `${userData.value.prenom} ${userData.value.nom}`,
+    }
+
+    const emailResponse = await axios.post(
+      'http://127.0.0.1:8000/api/send-identifiants-company',
+      emailPayload,
+    )
+    console.log('E-mails envoyés (Réponse API) :', emailResponse.data.message)
+
+    // Finalisation
     success.value = true
     setTimeout(() => {
+      // Redirection après succès
       router.push('/SignIn')
     }, 1000)
   } catch (err) {
-    // ... (gestion des erreurs) ...
+    // GESTION DES ERREURS
+    console.error('Erreur de soumission complète:', err)
+
+    if (err.response) {
+      // Erreur serveur (4xx ou 5xx)
+      const status = err.response.status
+      const data = err.response.data
+
+      if (status === 422 && data.errors) {
+        // Erreur de validation Laravel (champs manquants ou invalides)
+        error.value = 'Erreur de validation. Veuillez vérifier tous les champs du formulaire.'
+        // Optionnel : Vous pouvez loguer les erreurs spécifiques de Laravel pour le développeur
+        console.error('Erreurs de validation de Laravel:', data.errors)
+      } else if (status === 500) {
+        // Erreur interne du serveur (y compris les échecs PHPMailer)
+        error.value =
+          data.error ||
+          data.message ||
+          `Erreur serveur inattendue (Code 500) à l'étape ${newCompanyId ? '2 ou 3' : '1'}.`
+        // Si l'erreur se produit après l'étape 1, il peut y avoir des données orphelines.
+      } else {
+        // Autres erreurs de statut HTTP (404, 401, etc.)
+        error.value = data.message || `Erreur serveur (Code ${status}).`
+      }
+    } else if (err.message === "L'API n'a pas retourné l'ID de la société créée.") {
+      error.value = "Échec critique à l'étape de création de la société."
+    } else {
+      // Erreur réseau ou timeout (aucune réponse serveur)
+      error.value = 'Erreur de connexion réseau. Veuillez vérifier votre accès à internet.'
+    }
   } finally {
     loading.value = false
   }

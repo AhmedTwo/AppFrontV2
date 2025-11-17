@@ -1,28 +1,91 @@
-<script setup></script>
+<script setup>
+import { ref, defineProps } from 'vue'
+import axios from 'axios'
+
+// --- Récupération de l'ID passé dans l'URL via Vue Router ---
+// Exemple : /Home/apply/12  => offerId = 12
+const props = defineProps({
+  offerId: {
+    type: Number,
+    required: true, // si manquant -> erreur Vue
+  },
+})
+
+// --- État du composant ---
+const motivation = ref('')
+const isApplied = ref(false) // True si déjà postulé
+const loading = ref(false) // True pendant l'appel API
+const message = ref('') // Message pour l'utilisateur
+const authToken = ref(localStorage.getItem('auth_token')) // Token Sanctum stocké lors du login
+
+// --- Fonction d'envoi de candidature ---
+const applyToOffer = async () => {
+  loading.value = true
+  message.value = ''
+
+  // FormData envoyé au backend Laravel
+  const formData = new FormData()
+  formData.append('offer_id', props.offerId)
+  formData.append('motivation_text', motivation.value)
+
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/apply-offer', formData, {
+      headers: {
+        Authorization: `Bearer ${authToken.value}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    // Succès
+    message.value = '✅ ' + response.data.message
+    isApplied.value = true
+    motivation.value = '' // reset champ
+  } catch (error) {
+    // Erreurs backend
+    isApplied.value = false
+
+    if (error.response) {
+      if (error.response.status === 409) {
+        message.value = '⚠️ ' + error.response.data.message
+        isApplied.value = true // déjà postulé
+      } else if (error.response.data.errors) {
+        message.value = '❌ Erreur de validation: Le champ motivation est obligatoire.'
+      } else {
+        message.value = '❌ Échec de la candidature. Erreur serveur.'
+      }
+    } else {
+      message.value = '❌ Erreur réseau. Impossible de contacter le serveur.'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+</script>
 
 <template>
   <div class="apply-container">
     <h1 class="apply-title">POSTULER MAINTENANT !</h1>
 
-    <!-- Ici on utilise la variable $offer envoyée par le contrôleur -->
-    <form
-      method="POST"
-      action="/offers/apply?id=<?= htmlspecialchars($offer['id']) ?>"
-      enctype="multipart/form-data"
-    >
+    <!-- Formulaire Vue, pas PHP -->
+    <form @submit.prevent="applyToOffer" class="apply-form">
       <div class="motivation-field">
         <label for="inputMotivation" class="field-label">MOTIVATION :</label>
+
         <textarea
+          v-model="motivation"
           rows="6"
-          cols="50"
-          placeholder="Veuillez décrire en quelques lignes votre motivation qui sera vue par l'employeur"
+          placeholder="Décrivez votre motivation"
           class="textarea"
           id="inputMotivation"
-          name="inputMotivation"
           required
         ></textarea>
 
-        <button type="submit" class="send-btn">Envoyer</button>
+        <button type="submit" class="send-btn" :disabled="loading || isApplied">
+          {{ loading ? 'Envoi...' : isApplied ? 'Déjà postulé' : 'Envoyer' }}
+        </button>
+
+        <!-- Messages -->
+        <p v-if="message">{{ message }}</p>
       </div>
     </form>
   </div>
